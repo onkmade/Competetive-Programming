@@ -15,14 +15,16 @@ function fromRange(i, j){
     if(i > j) return "i should be smaller";
 
     let max = -Infinity;
+    let thatNum = 0
     for(let n = i; n <= j; n++){
-        let num = findMaxCycle(n);
-        if(num > max){
-            max = num;
+        let maxCycle = findMaxCycle(n);
+        if(maxCycle > max){
+            max = maxCycle;
+            thatNum = n;
         }
     }
 
-    return  max;
+    return  `The Num: ${thatNum} is ${max} length`;
 }
 
 console.log(fromRange(1, 10));
