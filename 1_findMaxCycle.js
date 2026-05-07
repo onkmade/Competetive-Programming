@@ -27,7 +27,7 @@ function fromRange(i, j){
     return  `The Num: ${thatNum} is ${max} length`;
 }
 
-console.log(fromRange(1, 10));
-console.log(fromRange(100, 200));
-console.log(fromRange(201, 210));
-console.log(fromRange(900, 1000));
+console.log(fromRange(1, 10)); // The Num: 9 is 20 length
+console.log(fromRange(100, 200)); // The Num: 171 is 125 length
+console.log(fromRange(201, 210)); // The Num: 206 is 89 length
+console.log(fromRange(900, 1000)); //The Num: 937 is 174 length
