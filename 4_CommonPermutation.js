@@ -30,4 +30,3 @@ function commonPermutation(a, b) {
 console.log(commonPermutation("pretty", "women"));    // Output: "e"
 console.log(commonPermutation("walking", "down"));    // Output: "nw"
 console.log(commonPermutation("the", "street"));      // Output: "et"
-
