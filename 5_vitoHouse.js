@@ -1,12 +1,12 @@
 function solve() {
-    var t = parseInt(prompt("Enter number of test cases:"));
+    let  t = parseInt(prompt("Enter number of test cases:"));
 
     while (t--) {
-        var input = prompt("Enter number of relatives followed by street numbers:").split(" ");
-        var n = parseInt(input[0]);
-        var neigh = [];
+        const input = prompt("Enter number of relatives followed by street numbers:").split(" ");
+        const n = parseInt(input[0]);
+        const neigh = [];
         
-        for (var i = 1; i <= n; i++) {
+        for (let i = 1; i <= n; i++) {
             neigh.push(parseInt(input[i]));
         }
 
@@ -14,10 +14,10 @@ function solve() {
             return a - b;
         });
 
-        var median = neigh[Math.floor(neigh.length / 2)];
-        var sum = 0;
+        const median = neigh[Math.floor(neigh.length / 2)];
+        let sum = 0;
 
-        for (var j = 0; j < neigh.length; j++) {
+        for (let j = 0; j < neigh.length; j++) {
             sum += Math.abs(neigh[j] - median);
         }
 
