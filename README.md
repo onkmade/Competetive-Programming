@@ -10,4 +10,4 @@ This repository contains solutions to various competitive programming problems. 
 6. Vito's Family problem statement: https://onlinejudge.org/external/101/10154.pdf
 7. ShoeMaker's Problem statement: https://onlinejudge.org/external/101/10150.pdf
 8. Qwerty problem statement: https://onlinejudge.org/external/101/10152.pdf
-9. primary Arithmatic: 
+9. Primary Arithmetic: https://onlinejudge.org/external/100/10035.pdf
