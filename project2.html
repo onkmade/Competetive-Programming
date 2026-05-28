@@ -1,0 +1,2723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Terminal // Developer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #161616;
+            --bg-panel: #0f0f0f;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #555555;
+            --border-subtle: #1a1a1a;
+            --border-medium: #222222;
+            --accent: #ffffff;
+            --accent-dim: #333333;
+            --cmd-help: #ff9f43;
+            --cmd-about: #4aa3ff;
+            --cmd-rest: #00d1b2;
+            --scanline-opacity: 0.03;
+            --grid-opacity: 0.02;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-primary);
+            font-family: 'JetBrains Mono', 'Space Mono', monospace;
+            color: var(--text-primary);
+            cursor: text;
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: var(--scanline-opacity);
+        }
+
+        /* Subtle Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* CRT Flicker */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.97; }
+            15% { opacity: 0.94; }
+            20% { opacity: 0.97; }
+            100% { opacity: 0.97; }
+        }
+
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        /* Cursor Blink */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        /* Main Container */
+        .terminal-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Window Chrome */
+        .window-chrome {
+            height: 32px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .chrome-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .chrome-dot:first-child { background: #ff5f56; }
+        .chrome-dot:nth-child(2) { background: #ffbd2e; }
+        .chrome-dot:nth-child(3) { background: #27c93f; }
+
+        /* Header Bar */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+        }
+
+        .header-center {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .header-action {
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .header-action:hover {
+            color: var(--text-primary);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 40px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .main-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 2px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 60vh;
+            padding: 40px 0;
+        }
+
+        .hero-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 300;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .hero-title .line-2 {
+            font-weight: 600;
+        }
+
+        .hero-subtitle {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: 20%;
+            font-weight: 300;
+        }
+
+        /* Terminal Input Area */
+        .terminal-input-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 0;
+            border-top: 1px solid var(--border-subtle);
+            margin-top: auto;
+        }
+
+        .prompt {
+            color: var(--text-muted);
+            font-size: 13px;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .terminal-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            caret-color: var(--text-primary);
+        }
+
+        .terminal-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Command Output */
+        .command-output {
+            padding: 8px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .output-line {
+            margin: 2px 0;
+            color: var(--text-secondary);
+            white-space: pre; /* preserve spacing for formatted blocks */
+        }
+
+        .cmd-help { color: var(--cmd-help); }
+        .cmd-about { color: var(--cmd-about); }
+        .cmd-rest { color: var(--cmd-rest); }
+
+        .output-line.error {
+            color: #ff4444;
+        }
+
+        .output-line.success {
+            color: #44ff44;
+        }
+
+        .output-line.system {
+            color: var(--text-muted);
+        }
+
+        .output-line.highlight {
+            color: var(--text-primary);
+        }
+
+        /* Footer Bar */
+        .footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            border-top: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+            font-size: 11px;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-item {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-item:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-center {
+            color: var(--text-muted);
+        }
+
+        .footer-right {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .footer-right:hover {
+            color: var(--text-primary);
+        }
+
+        /* Chat Modal */
+        .chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+        }
+
+        .chat-modal.active {
+            display: flex;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .chat-close {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+
+        .chat-close:hover {
+            color: var(--text-primary);
+        }
+
+        .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .chat-message.bot {
+            color: var(--text-secondary);
+        }
+
+        .chat-message.user {
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .chat-links {
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .chat-link {
+            color: #8888ff;
+            text-decoration: none;
+            margin-right: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .chat-link:hover {
+            opacity: 0.7;
+        }
+
+        .chat-link::after {
+            content: " ↗";
+            font-size: 10px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            padding: 16px 40px;
+            border-top: 1px solid var(--border-subtle);
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            caret-color: var(--text-primary);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send {
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .chat-send:hover {
+            color: var(--text-primary);
+        }
+
+        /* Boot Sequence */
+        .boot-sequence {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .boot-line {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 2px 0;
+            opacity: 0;
+        }
+
+        /* Section Styles */
+        .section-content {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 8px;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1px;
+            background: var(--border-subtle);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .project-item {
+            background: var(--bg-secondary);
+            padding: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .project-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .project-name {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .project-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .skill-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+
+        .skill-name {
+            width: 120px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .skill-track {
+            flex: 1;
+            height: 2px;
+            background: var(--border-subtle);
+            position: relative;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: var(--text-primary);
+            transition: width 1s ease;
+        }
+
+        .skill-value {
+            width: 40px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* ASCII Art */
+        .ascii-art {
+            font-size: 10px;
+            line-height: 1.2;
+            color: var(--text-muted);
+            white-space: pre;
+            margin: 16px 0;
+        }
+
+        /* Typing Effect */
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--text-primary);
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--text-primary); }
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.3;
+        }
+
+        /* Three.js node sphere — behind terminal output */
+        .node-sphere-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.4s ease;
+            overflow: hidden;
+        }
+
+        .node-sphere-layer.active {
+            opacity: 0.2;
+        }
+
+        .node-sphere-layer canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .main-content .hero-section,
+        .main-content #commandOutput,
+        .main-content .terminal-input-area {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==================== PROJECTS: CLASSIFIED ARCHIVE UI ==================== */
+        .archive-shell {
+            margin: 14px 0 6px;
+            padding: 16px 0;
+        }
+
+        .archive-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .archive-title {
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .archive-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 12px;
+            perspective: 900px;
+            transform-style: preserve-3d;
+        }
+
+        .archive-card {
+            grid-column: span 4;
+            min-height: 170px;
+            position: relative;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+            will-change: transform;
+            outline: none;
+        }
+
+        .archive-card:focus-visible {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .archive-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(650px 240px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.09), rgba(255,255,255,0) 55%),
+                radial-gradient(420px 220px at 25% 15%, rgba(255,255,255,0.05), rgba(255,255,255,0) 60%);
+            opacity: 0;
+            transition: opacity 180ms ease;
+            pointer-events: none;
+        }
+
+        .archive-card:hover::before {
+            opacity: 1;
+        }
+
+        .archive-card.featured {
+            grid-column: span 6;
+            min-height: 230px;
+        }
+
+        .archive-card.compact {
+            grid-column: span 3;
+            min-height: 150px;
+        }
+
+        @media (max-width: 1024px) {
+            .archive-card { grid-column: span 6; }
+            .archive-card.featured { grid-column: span 12; }
+            .archive-card.compact { grid-column: span 6; }
+        }
+
+        @media (max-width: 640px) {
+            .archive-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+            .archive-card, .archive-card.featured, .archive-card.compact { grid-column: span 6; }
+        }
+
+        .card-inner {
+            position: absolute;
+            inset: 0;
+            padding: 14px 14px 12px;
+            transform: translateZ(0.01px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .card-name {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(0,0,0,0.18);
+            color: var(--text-muted);
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            box-shadow: 0 0 0 rgba(255,255,255,0);
+        }
+
+        .status-dot.active {
+            background: rgba(255,255,255,0.85);
+            animation: pulseDot 1.65s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.18); }
+            50% { box-shadow: 0 0 0 7px rgba(255,255,255,0.00); }
+        }
+
+        .card-preview {
+            flex: 1;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.16);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-preview pre {
+            margin: 0;
+            padding: 12px;
+            font-size: 10px;
+            line-height: 1.25;
+            color: rgba(255,255,255,0.55);
+            white-space: pre;
+            user-select: none;
+            transform: translateZ(14px);
+            transition: filter 180ms ease, opacity 180ms ease;
+            filter: blur(0);
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .access-badge {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            padding: 6px 9px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(0,0,0,0.22);
+            font-size: 10px;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            transform: translateY(10px);
+            opacity: 0;
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .declass-stamp {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            padding: 6px 9px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.03);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            transform: translateY(10px);
+            opacity: 0;
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .archive-card:hover .access-badge,
+        .archive-card:hover .declass-stamp {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .archive-help {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 0.02em;
+        }
+
+        /* Modal */
+        .archive-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 18px;
+        }
+
+        .archive-modal.active {
+            display: flex;
+        }
+
+        .modal-panel {
+            width: min(1100px, 100%);
+            max-height: min(78vh, 760px);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(10,10,10,0.70);
+            box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .modal-close {
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.15);
+            transition: border-color 160ms ease, color 160ms ease;
+        }
+
+        .modal-close:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.16); }
+
+        .modal-split {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 0;
+            min-height: 0;
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .modal-split { grid-template-columns: 1fr; }
+        }
+
+        .modal-pane {
+            min-height: 0;
+            overflow: auto;
+            padding: 14px;
+        }
+
+        .modal-pane.left {
+            border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        @media (max-width: 900px) {
+            .modal-pane.left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        }
+
+        .modal-pane pre {
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.45;
+            white-space: pre;
+            color: rgba(255,255,255,0.70);
+        }
+
+        .code-scroll {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.18);
+        }
+
+        .code-scroll pre {
+            padding: 12px;
+            animation: codeDrift 10s linear infinite;
+        }
+
+        @keyframes codeDrift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-22%); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-bar, .footer-bar {
+                padding: 16px 20px;
+            }
+            .main-content {
+                padding: 0 20px;
+            }
+            .hero-title {
+                font-size: 28px;
+            }
+            .hero-subtitle {
+                margin-right: 0;
+            }
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        .glitch:hover::before {
+            animation: glitch-1 0.3s linear infinite;
+            color: #ff0000;
+            opacity: 0.3;
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+        }
+
+        .glitch:hover::after {
+            animation: glitch-2 0.3s linear infinite;
+            color: #00ffff;
+            opacity: 0.3;
+            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitch-1 {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-1px); }
+            80% { transform: translateX(1px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes glitch-2 {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(2px); }
+            40% { transform: translateX(-2px); }
+            60% { transform: translateX(1px); }
+            80% { transform: translateX(-1px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* System Status Indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #27c93f;
+            margin-right: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Hidden Easter Egg */
+        .easter-egg {
+            position: fixed;
+            bottom: 60px;
+            right: 40px;
+            font-size: 10px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 100;
+        }
+
+        .easter-egg.visible {
+            opacity: 1;
+        }
+
+        /* File System Tree */
+        .file-tree {
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 0;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .tree-item:hover {
+            color: var(--text-primary);
+        }
+
+        .tree-icon {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .tree-indent {
+            display: inline-block;
+            width: 20px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Visual Effects Layers -->
+    <div class="scanlines"></div>
+    <div class="grid-bg"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Boot Sequence -->
+    <div class="boot-sequence" id="bootSequence">
+        <div id="bootContent"></div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header">
+            <div class="logo">+_+</div>
+            <div class="chat-close" onclick="closeChat()">Close ×</div>
+        </div>
+        <div class="chat-content" id="chatContent">
+            <div class="chat-message bot">
+                Hello!<br>
+                Ask me anything. I'll answer everything)
+            </div>
+            <div class="chat-message user" style="opacity: 0.6;">
+                How do I use you?
+            </div>
+            <div class="chat-message bot">
+                You can install me for <a href="#" class="chat-link">slack</a> or <a href="#" class="chat-link">telegram</a>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" placeholder="Message" id="chatInput">
+            <div class="chat-send" onclick="sendChatMessage()">Send ↑</div>
+        </div>
+    </div>
+
+    <!-- Main Terminal -->
+    <div class="terminal-container" id="terminalContainer">
+        <!-- Window Chrome -->
+        <div class="window-chrome">
+            <div class="chrome-dot"></div>
+            <div class="chrome-dot"></div>
+            <div class="chrome-dot"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="header-bar">
+            <div class="logo">+_+</div>
+            <div class="header-center">↑</div>
+            <div class="header-action" onclick="openChat()">Share</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="node-sphere-layer" id="nodeSphereLayer" aria-hidden="true">
+                <canvas id="nodeSphereCanvas"></canvas>
+            </div>
+            <div class="hero-section" id="heroSection">
+                <div class="hero-title">
+                    <div>I'm cool,</div>
+                    <div class="line-2">but I want to: be better</div>
+                </div>
+                <div class="hero-subtitle">
+                    The text about the fact that we got to bots, and not just bots, but synthetic crypto-currency traders on artificial intelligence can do.
+                </div>
+            </div>
+
+            <div id="commandOutput"></div>
+
+            <div class="terminal-input-area" id="inputArea">
+                <span class="prompt">></span>
+                <div class="input-wrapper">
+                    <input type="text" class="terminal-input" id="terminalInput" placeholder="Type 'help' for commands..." autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-bar">
+            <div class="footer-left">
+                <div class="footer-item" onclick="executeCommand('base-system')">Base system</div>
+                <div class="footer-item" onclick="executeCommand('team-lookup')">Team lookup</div>
+                <div class="footer-item" onclick="executeCommand('contacts')">Contacts</div>
+            </div>
+            <div class="footer-center">↓</div>
+            <div class="footer-right" onclick="openChat()">Chat|</div>
+        </div>
+    </div>
+
+    <div class="easter-egg" id="easterEgg">
+        System integrity: 100% // Access level: ROOT
+    </div>
+
+    <!-- Projects Modal -->
+    <div class="archive-modal" id="archiveModal" aria-hidden="true">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Project details">
+            <div class="modal-topbar">
+                <div class="modal-title">
+                    <span id="modalTitle">PROJECT</span>
+                    <span class="status-pill" id="modalStatus">
+                        <span class="status-dot" id="modalDot"></span>
+                        <span id="modalStatusText">ARCHIVED</span>
+                    </span>
+                </div>
+                <div class="modal-close" id="modalClose">Close (Esc)</div>
+            </div>
+            <div class="modal-split">
+                <div class="modal-pane left">
+                    <pre id="modalMeta"></pre>
+                </div>
+                <div class="modal-pane right">
+                    <div class="code-scroll">
+                        <pre id="modalCode"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ==================== DATA & CONFIG ====================
+        const COMMANDS = {
+            'help': {
+                desc: 'Display available commands',
+                action: () => `
+AVAILABLE COMMANDS:
+─────────────────
+    <span class="cmd-help">help</span>          Display this help menu
+    <span class="cmd-about">about</span>         System information
+    <span class="cmd-rest">projects</span>      View archived projects
+    <span class="cmd-rest">skills</span>        System capabilities diagnostic
+    <span class="cmd-rest">experience</span>    Work history logs
+    <span class="cmd-rest">resume</span>        Access protected document
+    <span class="cmd-rest">medium</span>        Archived terminal logs
+    <span class="cmd-rest">socials</span>       External communication channels
+    <span class="cmd-rest">contact</span>       Secure transmission interface
+    <span class="cmd-rest">status</span>        System diagnostics
+    <span class="cmd-rest">inspect</span>       Deep system analysis
+    <span class="cmd-rest">whoami</span>        Current user profile
+    <span class="cmd-rest">clear</span>         Clear terminal buffer
+    <span class="cmd-rest">boot</span>          Reinitialize system
+    <span class="cmd-rest">exit</span>          Terminate session
+
+NAVIGATION:
+  ls            List directory contents
+  cd [dir]      Change directory
+  cat [file]    Display file contents
+
+HIDDEN:
+  Try finding secret commands...
+                `
+            },
+            'about': {
+                desc: 'System information',
+                action: () => `
+SYSTEM PROFILE: DEVELOPER_OS v2.6.0
+─────────────────────────────────────
+Name:        Aditya Solanke
+Role:        Web Developer
+Location:    Maharashtra, India
+Team Member: Kulpreet Kaur
+Status:      Active // Online
+Uptime:      ${Math.floor((Date.now() - sessionStart) / 1000)}s
+
+Bio:
+Member of largest global developer community
+with good position on it.
+
+Philosophy:
+"Code is poetry. Systems are stories."
+                `
+            },
+            'projects': {
+                desc: 'View archived projects',
+                action: () => null
+            },
+            'skills': {
+                desc: 'System capabilities',
+                action: () => `
+SYSTEM CAPABILITIES DIAGNOSTIC
+──────────────────────────────
+
+CORE MODULES:
+  JavaScript/TypeScript    ████████████████████  95%
+  React/Next.js            ███████████████████░  92%
+  Node.js/Go               ██████████████████░░  88%
+  Python/ML                ███████████████░░░░░  75%
+  Rust/Systems             ██████████████░░░░░░  70%
+  Solidity/Web3            █████████████░░░░░░░  65%
+
+INFRASTRUCTURE:
+  AWS/GCP/Azure            ███████████████████░  90%
+  Docker/Kubernetes        ██████████████████░░  85%
+  CI/CD Pipelines          █████████████████░░░  80%
+  Terraform/IaC            ███████████████░░░░░  75%
+
+DESIGN SYSTEMS:
+  Figma/Design Ops         ████████████████░░░░  78%
+  Motion/Animation         █████████████████░░░  82%
+  WebGL/Three.js           ██████████████░░░░░░  72%
+
+SECURITY CLEARANCE: LEVEL 5
+                `
+            },
+            'experience': {
+                desc: 'Work history',
+                action: () => `
+EXPERIENCE LOGS // CHRONOLOGICAL
+────────────────────────────────
+
+[2024-PRESENT] Principal Engineer @ NeuralSys
+  └─ Leading architecture for AI trading systems
+  └─ Team size: 24 engineers
+  └─ Stack: Go, Rust, Python, k8s
+
+[2022-2024] Senior Developer @ GhostLabs
+  └─ Built zero-knowledge proof systems
+  └─ Open source contributions: 340+ commits
+  └─ Stack: Rust, Solidity, React
+
+[2020-2022] Full-Stack Engineer @ PolyThink
+  └─ Core platform development from seed to Series B
+  └─ Scaled to 100k+ MAU
+  └─ Stack: Node, React, PostgreSQL, Redis
+
+[2018-2020] Junior Developer @ StartUp_01
+  └─ First production systems
+  └─ Learned to ship fast and break things
+  └─ Stack: JavaScript, MongoDB, AWS
+
+Total XP: 6+ years
+Commits: 4,200+
+Projects Shipped: 34
+                `
+            },
+            'resume': {
+                desc: 'Protected document',
+                action: () => `
+ACCESSING PROTECTED DOCUMENT...
+────────────────────────────────
+
+[AUTHENTICATION REQUIRED]
+
+Biometric scan: .......... VERIFIED
+Security token: ........... ACCEPTED
+Clearance level: .......... GRANTED
+
+DOCUMENT: RESUME_v2026.pdf
+Status: DECRYPTED
+Format: PDF/A-3
+Size: 1.2 MB
+
+────────────────────────────────
+ADITYA SOLANKE
+Web Developer
+────────────────────────────────
+
+[DOWNLOADING... 100%]
+
+Document ready for transmission.
+Use 'contact' to request secure delivery.
+                `
+            },
+            'medium': {
+                desc: 'Blog archives',
+                action: () => `
+TERMINAL LOGS // MEDIUM ARCHIVE
+────────────────────────────────
+
+[LOG-042] "The Ghost in the Machine: 
+           Building Conscious Interfaces"
+  └─ Views: 12.4k | Claps: 2.1k
+  └─ Tags: HCI, AI, Design
+
+[LOG-041] "Rust for JavaScript Developers:
+           A Survival Guide"
+  └─ Views: 8.7k | Claps: 1.8k
+  └─ Tags: Rust, Systems, Tutorial
+
+[LOG-038] "Zero Knowledge: Privacy in 
+           the Age of Surveillance"
+  └─ Views: 15.2k | Claps: 3.4k
+  └─ Tags: Cryptography, Privacy, Web3
+
+[LOG-035] "The Art of System Design:
+           Lessons from 10k Hours"
+  └─ Views: 22.1k | Claps: 4.7k
+  └─ Tags: Architecture, Engineering
+
+[LOG-031] "Why I Still Use Vim in 2026"
+  └─ Views: 45.3k | Claps: 8.9k
+  └─ Tags: Tools, Productivity, Retro
+
+Total articles: 47
+Total views: 1.2M+
+                `
+            },
+            'socials': {
+                desc: 'External channels',
+                action: () => `
+COMMUNICATION CHANNELS
+──────────────────────
+
+  github.com/adityasolanke      [ACTIVE]
+  twitter.com/adityasolanke_dev [ACTIVE]
+  linkedin.com/in/adityasolanke [ACTIVE]
+  dev.to/adityasolanke            [ACTIVE]
+  discord: adityasolanke#0001     [ONLINE]
+  signal: +1-XXX-XXX-XXXX    [SECURE]
+
+ENCRYPTION KEYS:
+  PGP: 0xA1B2C3D4E5F6 (4096-bit)
+  SSH: ED25519 fingerprint available
+
+All channels monitored during business hours.
+Response time: < 2 hours
+                `
+            },
+            'contact': {
+                desc: 'Secure transmission',
+                action: () => `
+SECURE TRANSMISSION INTERFACE
+─────────────────────────────
+
+[ESTABLISHING ENCRYPTED CHANNEL...]
+
+Protocol: TLS 1.3 + AES-256-GCM
+Endpoint: mail@adityasolanke.dev
+Status: CHANNEL OPEN
+
+─────────────────────────────
+CONTACT FORM:
+─────────────────────────────
+
+Name:     [________________]
+Email:    [________________]
+Subject:  [________________]
+Message:  [________________]
+
+         [ TRANSMIT ]
+
+All messages are end-to-end encrypted.
+No logs retained on intermediate servers.
+                `
+            },
+            'status': {
+                desc: 'System diagnostics',
+                action: () => `
+SYSTEM DIAGNOSTICS REPORT
+─────────────────────────
+
+OS:        Developer_OS v2.6.0 (Custom Kernel)
+Kernel:    6.8.0-generic
+Uptime:    ${formatUptime(Date.now() - sessionStart)}
+Load:      0.42, 0.38, 0.35
+Memory:    16.0 GB / 32.0 GB (50% free)
+Disk:      512 GB / 1.0 TB (49% used)
+Network:   10 Gbps fiber (Active)
+Firewall:  ACTIVE (Strict mode)
+VPN:       Connected (Zurich node)
+
+PROCESSES:
+  node      [████████░░] 8 instances
+  docker    [██████░░░░] 12 containers
+  python    [████░░░░░░] 4 workers
+  rust      [██░░░░░░░░] 2 services
+
+TEMPERATURE: 42°C (Nominal)
+FAN SPEED:   1,200 RPM
+
+All systems nominal. No anomalies detected.
+                `
+            },
+            'whoami': {
+                desc: 'User profile',
+                action: () => `
+USER PROFILE
+────────────
+
+Username: visitor
+UID:      1001
+GID:      1001
+Shell:    /bin/terminal
+Home:     /home/visitor
+Groups:   users, developers, sudo
+
+Session:  ${new Date().toISOString()}
+IP:       192.168.X.X (Masked)
+Location: Classified
+Clearance: LEVEL 1 (Guest)
+
+Note: Elevated privileges available
+      upon identity verification.
+                `
+            },
+            'inspect': {
+                desc: 'Deep analysis',
+                action: () => `
+DEEP SYSTEM ANALYSIS
+────────────────────
+
+Running forensic scan...
+
+[████████████████████] 100%
+
+FINDINGS:
+  1. Kernel integrity:     VERIFIED
+  2. Memory allocation:    OPTIMAL
+  3. Network traces:       CLEAN
+  4. Hidden processes:     NONE
+  5. Backdoor detection:   NEGATIVE
+  6. Encryption strength:  MILITARY-GRADE
+
+ANOMALIES:
+  ! Unknown signature in /var/log/ghost
+  ! Unusual entropy in /dev/random
+  ! Phantom process PID 1337
+
+RECOMMENDATION:
+  System is secure. Continue operations.
+  Monitor PID 1337 for further analysis.
+                `
+            },
+            'ls': {
+                desc: 'List directory',
+                action: () => `
+total 48
+drwxr-xr-x  6 aditya aditya 4096  Jan 15 09:32 .
+drwxr-xr-x  18 root root 4096 Jan 15 09:00 ..
+-rw-r--r--  1 aditya aditya  220 Jan 10 14:22 .bash_logout
+-rw-r--r--  1 aditya aditya 3.7K Jan 12 08:45 .bashrc
+drwxr-xr-x  3 aditya aditya 4096 Jan 14 16:20 projects
+drwxr-xr-x  2 aditya aditya 4096 Jan 13 11:15 documents
+-rw-r--r--  1 aditya aditya  891 Jan 11 22:08 notes.txt
+drwxr-xr-x  5 aditya aditya 4096 Jan 15 07:30 secrets
+-rw-r--r--  1 aditya aditya 1.2M Jan 14 09:00 resume.pdf
+                `
+            },
+            'cd': {
+                desc: 'Change directory',
+                action: () => `
+Navigation restricted in guest mode.
+Use 'sudo cd [directory]' for elevated access.
+                `
+            },
+            'cat': {
+                desc: 'Display file',
+                action: () => `
+Error: Permission denied.
+File contents require LEVEL 3 clearance.
+                `
+            },
+            'clear': {
+                desc: 'Clear terminal',
+                action: () => {
+                    document.getElementById('commandOutput').innerHTML = '';
+                    return null;
+                }
+            },
+            'boot': {
+                desc: 'Reinitialize',
+                action: () => {
+                    location.reload();
+                    return 'Rebooting system...';
+                }
+            },
+            'exit': {
+                desc: 'Terminate session',
+                action: () => `
+SESSION TERMINATION SEQUENCE INITIATED
+──────────────────────────────────────
+
+Saving state... DONE
+Clearing buffers... DONE
+Closing connections... DONE
+
+Goodbye, user.
+
+[CONNECTION CLOSED]
+
+Tip: Refresh to reconnect.
+                `
+            },
+            'sudo': {
+                desc: 'Elevated privileges',
+                action: () => `
+[sudo] password for visitor: 
+
+Sorry, user visitor is not in the sudoers file.
+This incident will be reported.
+                `
+            },
+            'hack': {
+                desc: '???',
+                action: () => `
+Nice try. 
+
+But real hackers build, not break.
+
+Try 'projects' to see what I've built.
+                `
+            },
+            'matrix': {
+                desc: '???',
+                action: () => `
+Wake up, Neo...
+
+The Matrix has you...
+
+Follow the white rabbit.
+
+Knock, knock, Neo.
+                `
+            },
+            'coffee': {
+                desc: '???',
+                action: () => `
+    ( (    
+     ) )   
+    ........
+    |      |]
+    \      /
+     '----'
+
+Here's your coffee. ☕
+Now get back to coding.
+                `
+            },
+            '42': {
+                desc: '???',
+                action: () => `
+The Answer to the Ultimate Question of Life,
+the Universe, and Everything is...
+
+42
+
+But what is the question?
+                `
+            }
+        };
+
+        const PROJECTS = {
+            'neuraltrade': 'NeuralTrade AI - Full architecture docs classified. Contact for access.',
+            'engram': 'Engram Archive - Open source at github.com/adityasolanke/engram',
+            'polythink': 'PolyThink Engine - API docs: docs.polythink.dev',
+            'lifemap': 'LifeMap Protocol - Currently in maintenance mode.',
+            'ghostwire': 'GhostWire Framework - Stealth project. No public info.'
+        };
+
+        // ==================== STATE ====================
+        let sessionStart = Date.now();
+        let commandHistory = [];
+        let historyIndex = -1;
+        let currentInput = '';
+        let bootComplete = false;
+
+        // ==================== BOOT SEQUENCE ====================
+        const bootLines = [
+            'BIOS Date: 01/15/26 09:32:14 Ver 2.6.0',
+            'CPU: NeuralCore i9-9900K @ 5.00GHz',
+            'Speed: 5000 MHz',
+            'Initializing USB Controllers .. Done.',
+            'Detecting Primary Master ... NVMe SSD',
+            'Detecting Primary Slave  ... None',
+            'Detecting Secondary Master ... None',
+            'Detecting Secondary Slave  ... None',
+            'Memory Test: 32768K OK',
+            '',
+            'Loading kernel modules...',
+            '[OK] Started kernel.',
+            '[OK] Mounted /dev/nvme0n1p2.',
+            '[OK] Started File System Check on /dev/nvme0n1p1.',
+            '[OK] Mounted /boot.',
+            '[OK] Started Remount Root and Kernel File Systems.',
+            '',
+            'Developer_OS v2.6.0 loading...',
+            '[OK] Reached target Network.',
+            '[OK] Reached target Network is Online.',
+            '[OK] Started OpenSSH server.',
+            '[OK] Started Docker Application Container Engine.',
+            '[OK] Started Terminal Interface Daemon.',
+            '',
+            'Welcome to Developer_OS.',
+            'Login: visitor',
+            'Password: ********',
+            '',
+            'Last login: ' + new Date().toUTCString(),
+            '',
+            'Type "help" for available commands.',
+            ''
+        ];
+
+        function runBootSequence() {
+            const bootContent = document.getElementById('bootContent');
+            let delay = 0;
+
+            bootLines.forEach((line, index) => {
+                delay += Math.random() * 100 + 50;
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'boot-line';
+                    div.textContent = line;
+                    bootContent.appendChild(div);
+
+                    gsap.to(div, {
+                        opacity: 1,
+                        duration: 0.1,
+                        ease: 'none'
+                    });
+
+                    if (index === bootLines.length - 1) {
+                        setTimeout(() => {
+                            gsap.to('#bootSequence', {
+                                opacity: 0,
+                                duration: 0.8,
+                                onComplete: () => {
+                                    document.getElementById('bootSequence').style.display = 'none';
+                                    bootComplete = true;
+                                    document.getElementById('terminalInput').focus();
+                                    initHeroAnimation();
+                                }
+                            });
+                        }, 800);
+                    }
+                }, delay);
+            });
+        }
+
+        // ==================== HERO ANIMATION ====================
+        function initHeroAnimation() {
+            gsap.from('.hero-title > div:first-child', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out',
+                delay: 0.2
+            });
+
+            gsap.from('.hero-title .line-2', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out',
+                delay: 0.5
+            });
+
+            gsap.from('.hero-subtitle', {
+                y: 20,
+                opacity: 0,
+                duration: 0.8,
+                ease: 'power2.out',
+                delay: 0.9
+            });
+
+            gsap.from('.header-bar', {
+                y: -20,
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power2.out',
+                delay: 0.1
+            });
+
+            gsap.from('.footer-bar', {
+                y: 20,
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power2.out',
+                delay: 0.3
+            });
+        }
+
+        // ==================== PARTICLE SYSTEM ====================
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    size: Math.random() * 2,
+                    opacity: Math.random() * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.3})`;
+                    ctx.fill();
+                });
+
+                // Draw connections
+                particles.forEach((p1, i) => {
+                    particles.slice(i + 1).forEach(p2 => {
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.05 * (1 - dist / 150)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ==================== NODE SPHERE (Three.js) ====================
+        const SECTION_COMMANDS = new Set([
+            'about', 'projects', 'skills', 'experience',
+            'resume', 'medium', 'socials', 'contact'
+        ]);
+
+        const NodeSphere = (function () {
+            let renderer, scene, camera, sphereGroup;
+            let wireMaterial, nodeMaterial, linkMaterial;
+            let geometries = [];
+            let materials = [];
+            let animId = null;
+            let initialized = false;
+            let sectionActive = false;
+            let isVisible = true;
+            let layerEl, canvasEl;
+
+            const damp = 0.045;
+            const target = { rotX: 0, rotY: 0, camX: 0, camY: 0 };
+            const current = { rotX: 0, rotY: 0, camX: 0, camY: 0 };
+            let autoPhase = 0;
+            let touchDragging = false;
+            let lastTouchX = 0;
+            let lastTouchY = 0;
+
+            function trackResource(obj) {
+                if (obj && obj.isBufferGeometry) geometries.push(obj);
+                else if (obj && obj.isMaterial) materials.push(obj);
+            }
+
+            function addNeuralLinks(geometry, radius) {
+                const pos = geometry.attributes.position;
+                const verts = [];
+                for (let i = 0; i < pos.count; i++) {
+                    verts.push(new THREE.Vector3().fromBufferAttribute(pos, i));
+                }
+                const lineVerts = [];
+                const minD = radius * 0.42;
+                const maxD = radius * 0.88;
+                for (let i = 0; i < verts.length; i++) {
+                    for (let j = i + 1; j < verts.length; j++) {
+                        const d = verts[i].distanceTo(verts[j]);
+                        if (d > minD && d < maxD && ((i * 7 + j * 13) % 11 === 0)) {
+                            lineVerts.push(
+                                verts[i].x, verts[i].y, verts[i].z,
+                                verts[j].x, verts[j].y, verts[j].z
+                            );
+                        }
+                    }
+                }
+                if (!lineVerts.length) return null;
+                const linkGeo = new THREE.BufferGeometry();
+                linkGeo.setAttribute('position', new THREE.Float32BufferAttribute(lineVerts, 3));
+                trackResource(linkGeo);
+                const lines = new THREE.LineSegments(linkGeo, linkMaterial);
+                return lines;
+            }
+
+            function buildSphere() {
+                sphereGroup = new THREE.Group();
+                const radius = 2.35;
+
+                wireMaterial = new THREE.LineBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.14
+                });
+                nodeMaterial = new THREE.PointsMaterial({
+                    color: 0xaaaaaa,
+                    size: 0.045,
+                    transparent: true,
+                    opacity: 0.28,
+                    sizeAttenuation: true
+                });
+                linkMaterial = new THREE.LineBasicMaterial({
+                    color: 0x888888,
+                    transparent: true,
+                    opacity: 0.06
+                });
+                materials.push(wireMaterial, nodeMaterial, linkMaterial);
+
+                const outerGeo = new THREE.IcosahedronGeometry(radius, 2);
+                trackResource(outerGeo);
+
+                const wireGeo = new THREE.WireframeGeometry(outerGeo);
+                trackResource(wireGeo);
+                sphereGroup.add(new THREE.LineSegments(wireGeo, wireMaterial));
+
+                const nodes = new THREE.Points(outerGeo, nodeMaterial);
+                sphereGroup.add(nodes);
+
+                const links = addNeuralLinks(outerGeo, radius);
+                if (links) sphereGroup.add(links);
+
+                const innerGeo = new THREE.IcosahedronGeometry(radius * 0.58, 1);
+                trackResource(innerGeo);
+                const innerWire = new THREE.WireframeGeometry(innerGeo);
+                trackResource(innerWire);
+                const innerMat = new THREE.LineBasicMaterial({
+                    color: 0x666666,
+                    transparent: true,
+                    opacity: 0.08
+                });
+                materials.push(innerMat);
+                const inner = new THREE.LineSegments(innerWire, innerMat);
+                inner.rotation.set(0.4, 0.7, 0.2);
+                sphereGroup.add(inner);
+
+                scene.add(sphereGroup);
+            }
+
+            function init() {
+                if (initialized || typeof THREE === 'undefined') return;
+                layerEl = document.getElementById('nodeSphereLayer');
+                canvasEl = document.getElementById('nodeSphereCanvas');
+                if (!layerEl || !canvasEl) return;
+
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+                camera.position.z = 6.2;
+
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvasEl,
+                    alpha: true,
+                    antialias: true,
+                    powerPreference: 'high-performance'
+                });
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.setClearColor(0x000000, 0);
+
+                buildSphere();
+                resize();
+                bindInput();
+                observeVisibility();
+                window.addEventListener('resize', resize);
+                window.addEventListener('beforeunload', dispose);
+
+                initialized = true;
+            }
+
+            function resize() {
+                if (!renderer || !camera || !canvasEl) return;
+                const parent = canvasEl.parentElement;
+                const w = parent.clientWidth || window.innerWidth;
+                const h = parent.clientHeight || window.innerHeight;
+                renderer.setSize(w, h, false);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+
+            function setPointerFromNorm(nx, ny) {
+                target.rotY = nx * 0.42;
+                target.rotX = ny * 0.28;
+                target.camX = nx * 0.22;
+                target.camY = -ny * 0.14;
+            }
+
+            function bindInput() {
+                window.addEventListener('mousemove', (e) => {
+                    if (!sectionActive) return;
+                    const nx = (e.clientX / window.innerWidth) * 2 - 1;
+                    const ny = (e.clientY / window.innerHeight) * 2 - 1;
+                    setPointerFromNorm(nx, ny);
+                }, { passive: true });
+
+                window.addEventListener('touchstart', (e) => {
+                    if (!sectionActive || !e.touches.length) return;
+                    touchDragging = true;
+                    lastTouchX = e.touches[0].clientX;
+                    lastTouchY = e.touches[0].clientY;
+                }, { passive: true });
+
+                window.addEventListener('touchmove', (e) => {
+                    if (!sectionActive || !e.touches.length) return;
+                    const t = e.touches[0];
+                    if (touchDragging) {
+                        const dx = (t.clientX - lastTouchX) / window.innerWidth;
+                        const dy = (t.clientY - lastTouchY) / window.innerHeight;
+                        lastTouchX = t.clientX;
+                        lastTouchY = t.clientY;
+                        target.rotY += dx * 1.8;
+                        target.rotX += dy * 1.2;
+                        target.camX += dx * 0.6;
+                        target.camY -= dy * 0.4;
+                    } else {
+                        const nx = (t.clientX / window.innerWidth) * 2 - 1;
+                        const ny = (t.clientY / window.innerHeight) * 2 - 1;
+                        setPointerFromNorm(nx, ny);
+                    }
+                }, { passive: true });
+
+                window.addEventListener('touchend', () => { touchDragging = false; }, { passive: true });
+
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', (e) => {
+                        if (!sectionActive || touchDragging) return;
+                        const beta = (e.beta || 0) / 90;
+                        const gamma = (e.gamma || 0) / 90;
+                        setPointerFromNorm(
+                            Math.max(-1, Math.min(1, gamma)),
+                            Math.max(-1, Math.min(1, beta * 0.5))
+                        );
+                    }, { passive: true });
+                }
+            }
+
+            function observeVisibility() {
+                const observer = new IntersectionObserver((entries) => {
+                    isVisible = entries[0]?.isIntersecting ?? true;
+                    if (sectionActive && isVisible && document.visibilityState === 'visible') {
+                        startLoop();
+                    } else {
+                        stopLoop();
+                    }
+                }, { threshold: 0.05 });
+                observer.observe(canvasEl);
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'hidden') stopLoop();
+                    else if (sectionActive && isVisible) startLoop();
+                });
+            }
+
+            function animate() {
+                if (!sectionActive || !renderer) return;
+
+                autoPhase += 0.0035;
+                current.rotX += (target.rotX - current.rotX) * damp;
+                current.rotY += (target.rotY - current.rotY) * damp;
+                current.camX += (target.camX - current.camX) * damp;
+                current.camY += (target.camY - current.camY) * damp;
+
+                sphereGroup.rotation.x = current.rotX + Math.sin(autoPhase * 0.7) * 0.04;
+                sphereGroup.rotation.y = current.rotY + autoPhase * 0.35;
+                sphereGroup.rotation.z = Math.sin(autoPhase * 0.4) * 0.02;
+
+                camera.position.x = current.camX;
+                camera.position.y = current.camY;
+                camera.position.z = 6.2;
+                camera.lookAt(0, 0, 0);
+
+                renderer.render(scene, camera);
+                animId = requestAnimationFrame(animate);
+            }
+
+            function startLoop() {
+                if (animId !== null || !initialized || !sectionActive) return;
+                if (!isVisible || document.visibilityState !== 'visible') return;
+                animId = requestAnimationFrame(animate);
+            }
+
+            function stopLoop() {
+                if (animId !== null) {
+                    cancelAnimationFrame(animId);
+                    animId = null;
+                }
+            }
+
+            function show() {
+                if (!initialized) init();
+                if (!initialized) return;
+                sectionActive = true;
+                layerEl.classList.add('active');
+                resize();
+                if (isVisible && document.visibilityState === 'visible') startLoop();
+            }
+
+            function hide() {
+                if (layerEl) layerEl.classList.remove('active');
+                target.rotX = target.rotY = target.camX = target.camY = 0;
+                setTimeout(() => {
+                    sectionActive = false;
+                    stopLoop();
+                }, 1400);
+            }
+
+            function dispose() {
+                stopLoop();
+                geometries.forEach((g) => g.dispose());
+                materials.forEach((m) => m.dispose());
+                geometries = [];
+                materials = [];
+                if (renderer) {
+                    renderer.dispose();
+                    renderer = null;
+                }
+                initialized = false;
+            }
+
+            return { show, hide, init, dispose };
+        })();
+
+        // ==================== PROJECTS: CLASSIFIED ARCHIVE ====================
+        const PROJECT_ARCHIVE = [
+            {
+                id: 'neuraltrade',
+                name: 'NeuralTrade AI',
+                status: 'PRODUCTION',
+                access: 'LEVEL 5',
+                featured: true,
+                tags: ['ML', 'TRADING', 'REALTIME'],
+                metrics: { load: '99.9%', latency: '12ms', nodes: '48' },
+                summary: 'Synthetic crypto-currency trading platform with ML prediction models.',
+                stack: ['Go', 'Python', 'Rust', 'k8s'],
+                snippet: `// execution path (redacted)\nfn route_order(order: Order) -> Result<Ack> {\n  verify_signature(order.sig)?;\n  let risk = risk_engine::score(&order)?;\n  if risk.blocks { return Err(Error::Denied); }\n  match exchange::route(order) {\n    Ok(ack) => Ok(ack),\n    Err(e) => retry_with_backoff(e),\n  }\n}\n\n// telemetry stream\nmetric(\"fill_rate\", fill_rate());\nmetric(\"p99_latency_ms\", p99());\n\n// ... more code ...`,
+                diagram: `ARCHITECTURE (CLASSIFIED)\n──────────────────────\n[ ingest ]──▶[ feature store ]──▶[ model svc ]\n    │                 │              │\n    │                 └──▶[ risk ]───┤\n    ▼                                ▼\n[ order bus ]──▶[ router ]──▶[ exchanges ]\n    │                    │\n    └──▶[ audit log ]◀───┘`
+            },
+            {
+                id: 'polythink',
+                name: 'PolyThink Engine',
+                status: 'ACTIVE',
+                access: 'LEVEL 4',
+                featured: true,
+                tags: ['AI', 'MULTIMODAL', 'PIPELINES'],
+                metrics: { apiCalls: '2M/day', uptime: '99.8%', regions: '3' },
+                summary: 'Multi-modal AI content synthesis platform for creative workflows.',
+                stack: ['Node', 'React', 'PostgreSQL', 'Redis'],
+                snippet: `// pipeline graph\nconst graph = new Pipeline()\n  .use(\"sanitize\", sanitize)\n  .use(\"embed\", embed)\n  .use(\"rank\", rerank)\n  .use(\"compose\", compose)\n\nexport async function run(job) {\n  const ctx = await graph.execute(job)\n  return ctx.output\n}\n\n// ... more code ...`,
+                diagram: `DATAFLOW\n───────\n[ input ] → [ sanitize ] → [ embed ]\n                 │            │\n                 └────→ [ rank ] ───→ [ compose ] → [ output ]`
+            },
+            {
+                id: 'engram',
+                name: 'Engram Archive',
+                status: 'BETA',
+                access: 'LEVEL 3',
+                featured: false,
+                compact: true,
+                tags: ['WEB3', 'ARCHIVE'],
+                metrics: { users: '12,400+', chain: 'L2', proofs: 'ZK' },
+                summary: 'Decentralized knowledge preservation system on Ethereum L2.',
+                stack: ['Solidity', 'TypeScript', 'IPFS'],
+                snippet: `// merkle inclusion proof\nexport function verify(proof, root, leaf) {\n  let h = leaf\n  for (const step of proof) {\n    h = step.left ? hash(step.node, h) : hash(h, step.node)\n  }\n  return h === root\n}\n\n// ... more code ...`,
+                diagram: `STORAGE\n───────\n[ docs ] → [ chunk ] → [ IPFS ]\n                    ↘\n                     [ index ] → [ L2 ]`
+            },
+            {
+                id: 'lifemap',
+                name: 'LifeMap Protocol',
+                status: 'MAINTENANCE',
+                access: 'LEVEL 2',
+                featured: false,
+                compact: true,
+                tags: ['VIS', 'GRAPH'],
+                metrics: { mode: 'READONLY', maps: '1,220', sync: 'paused' },
+                summary: 'Personal network visualization with temporal relationship tracking.',
+                stack: ['TypeScript', 'WebGL'],
+                snippet: `// timeline layout\nfor (const edge of edges) {\n  const t = edge.timestamp\n  edge.y = lerp(minY, maxY, normalize(t))\n}\n\n// ... more code ...`,
+                diagram: `GRAPH\n─────\n(node)───(node)───(node)\n  │        │\n (node)──(node)`
+            },
+            {
+                id: 'ghostwire',
+                name: 'GhostWire Framework',
+                status: 'STEALTH',
+                access: 'LEVEL 6',
+                featured: false,
+                compact: false,
+                tags: ['MESH', 'SECURE'],
+                metrics: { secrecy: 'HIGH', transport: 'P2P', audit: 'pending' },
+                summary: 'Anonymous mesh networking layer for secure IoT communication.',
+                stack: ['Rust', 'Embedded'],
+                snippet: `// handshake (abstract)\nfn handshake(peer: Peer) -> Result<Session> {\n  let k = kx::derive(peer.pubkey)?;\n  let s = noise::init(k);\n  s.negotiate(peer)\n}\n\n// ... more code ...`,
+                diagram: `TOPOLOGY\n────────\n A───B───C\n │ \\ │ / │\n D───E───F`
+            }
+        ];
+
+        function hashSeed(str) {
+            let h = 2166136261;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
+
+        function genAsciiPreview(projectId, frame = 0) {
+            const w = 26;
+            const h = 10;
+            const seed = hashSeed(projectId) ^ (frame * 1013904223);
+            const rnd = (n) => {
+                // xorshift-ish deterministic
+                let x = (seed + n * 2654435761) >>> 0;
+                x ^= x << 13; x >>>= 0;
+                x ^= x >> 17; x >>>= 0;
+                x ^= x << 5;  x >>>= 0;
+                return x / 0xffffffff;
+            };
+
+            const grid = Array.from({ length: h }, () => Array.from({ length: w }, () => ' '));
+            const nodes = 12;
+            const pts = [];
+            for (let i = 0; i < nodes; i++) {
+                pts.push({
+                    x: 2 + Math.floor(rnd(i + 1) * (w - 4)),
+                    y: 1 + Math.floor(rnd(i + 77) * (h - 2))
+                });
+            }
+
+            // draw nodes
+            for (const p of pts) grid[p.y][p.x] = (rnd(p.x + p.y + frame) > 0.5 ? '●' : '·');
+
+            // draw links
+            const linkCount = 14;
+            for (let i = 0; i < linkCount; i++) {
+                const a = pts[Math.floor(rnd(i + 9) * pts.length)];
+                const b = pts[Math.floor(rnd(i + 99) * pts.length)];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const steps = Math.max(Math.abs(dx), Math.abs(dy)) || 1;
+                for (let s = 0; s <= steps; s++) {
+                    const x = Math.round(a.x + (dx * s) / steps);
+                    const y = Math.round(a.y + (dy * s) / steps);
+                    if (x <= 0 || y <= 0 || x >= w - 1 || y >= h - 1) continue;
+                    if (grid[y][x] === ' ') {
+                        const ch = Math.abs(dx) > Math.abs(dy) ? '─' : (Math.abs(dy) > Math.abs(dx) ? '│' : '╱');
+                        grid[y][x] = ch;
+                    }
+                }
+            }
+
+            // subtle frame border noise
+            for (let i = 0; i < w; i++) {
+                if (rnd(i + 300 + frame) > 0.86) grid[0][i] = '·';
+                if (rnd(i + 600 + frame) > 0.86) grid[h - 1][i] = '·';
+            }
+
+            return grid.map(r => r.join('')).join('\n');
+        }
+
+        function prettyMeta(project) {
+            const obj = {
+                id: project.id,
+                name: project.name,
+                status: project.status,
+                access: project.access,
+                tags: project.tags,
+                stack: project.stack,
+                metrics: project.metrics,
+                summary: project.summary
+            };
+            return JSON.stringify(obj, null, 2)
+                .replace(/\"/g, '')
+                .replace(/\,/g, '')
+                .replace(/\{/g, '{')
+                .replace(/\}/g, '}');
+        }
+
+        function ensureArchiveHandlers() {
+            if (ensureArchiveHandlers.bound) return;
+            ensureArchiveHandlers.bound = true;
+
+            const modal = document.getElementById('archiveModal');
+            const close = document.getElementById('modalClose');
+
+            close.addEventListener('click', () => closeArchiveModal());
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeArchiveModal();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (!bootComplete) return;
+
+                const isModalOpen = modal.classList.contains('active');
+                const grid = document.querySelector('.archive-grid');
+                const cards = grid ? Array.from(grid.querySelectorAll('.archive-card')) : [];
+
+                if (isModalOpen) {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        closeArchiveModal();
+                    }
+                    return;
+                }
+
+                if (!cards.length) return;
+
+                // Only intercept when focus is in terminal input area
+                const activeEl = document.activeElement;
+                const inputEl = document.getElementById('terminalInput');
+                const focusInTerminal = (activeEl === inputEl || activeEl === document.body);
+                if (!focusInTerminal) return;
+
+                const state = ensureArchiveHandlers.state || { idx: 0 };
+                ensureArchiveHandlers.state = state;
+
+                const clamp = (n) => Math.max(0, Math.min(cards.length - 1, n));
+                const focusCard = (i) => {
+                    state.idx = clamp(i);
+                    cards[state.idx].focus({ preventScroll: true });
+                    cards[state.idx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                };
+
+                const cols = window.innerWidth <= 640 ? 1 : (window.innerWidth <= 1024 ? 2 : 3);
+
+                if (e.key === 'ArrowRight') { e.preventDefault(); focusCard(state.idx + 1); }
+                else if (e.key === 'ArrowLeft') { e.preventDefault(); focusCard(state.idx - 1); }
+                else if (e.key === 'ArrowDown') { e.preventDefault(); focusCard(state.idx + cols); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); focusCard(state.idx - cols); }
+                else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const pid = cards[state.idx].getAttribute('data-project-id');
+                    const p = PROJECT_ARCHIVE.find(x => x.id === pid);
+                    if (p) openArchiveModal(p);
+                }
+            });
+        }
+
+        function openArchiveModal(project) {
+            const modal = document.getElementById('archiveModal');
+            const title = document.getElementById('modalTitle');
+            const meta = document.getElementById('modalMeta');
+            const code = document.getElementById('modalCode');
+            const dot = document.getElementById('modalDot');
+            const statusText = document.getElementById('modalStatusText');
+
+            title.textContent = project.name;
+            meta.textContent = prettyMeta(project) + `\n\nACCESS NOTES:\n- Use Arrow keys to navigate cards\n- Enter to open | Esc to close\n- Some fields may be redacted`;
+            code.textContent = project.diagram + `\n\n` + project.snippet + `\n\n// EOF`;
+
+            statusText.textContent = project.status;
+            dot.className = 'status-dot' + ((project.status === 'ACTIVE' || project.status === 'PRODUCTION') ? ' active' : '');
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+
+            gsap.fromTo('.modal-panel',
+                { y: 18, opacity: 0, filter: 'blur(6px)' },
+                { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.35, ease: 'power2.out' }
+            );
+        }
+
+        function closeArchiveModal() {
+            const modal = document.getElementById('archiveModal');
+            if (!modal.classList.contains('active')) return;
+
+            gsap.to('.modal-panel', {
+                y: 10,
+                opacity: 0,
+                filter: 'blur(8px)',
+                duration: 0.25,
+                ease: 'power2.in',
+                onComplete: () => {
+                    modal.classList.remove('active');
+                    modal.setAttribute('aria-hidden', 'true');
+                    document.getElementById('terminalInput')?.focus();
+                }
+            });
+        }
+
+        function mountProjectsArchive() {
+            const output = document.getElementById('commandOutput');
+            if (!output) return;
+
+            // remove previous archive shell if present
+            const existing = output.querySelector('.archive-shell');
+            if (existing) existing.remove();
+
+            const shell = document.createElement('div');
+            shell.className = 'archive-shell';
+
+            const header = document.createElement('div');
+            header.className = 'archive-header';
+            header.innerHTML = `
+                <div class="archive-title">ARCHIVED PROJECTS // CLASSIFIED GRID</div>
+                <div class="archive-meta">NAV: ← ↑ ↓ → • OPEN: Enter • CLOSE: Esc</div>
+            `;
+
+            const grid = document.createElement('div');
+            grid.className = 'archive-grid';
+
+            // build cards
+            PROJECT_ARCHIVE.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'archive-card' + (p.featured ? ' featured' : '') + (p.compact ? ' compact' : '');
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('data-project-id', p.id);
+                card.setAttribute('aria-label', `Open project ${p.name}`);
+
+                const ascii = genAsciiPreview(p.id, 0);
+                const dotClass = (p.status === 'ACTIVE' || p.status === 'PRODUCTION') ? 'status-dot active' : 'status-dot';
+                const stamp = (p.status === 'STEALTH' || p.access === 'LEVEL 6') ? 'DECLASS PENDING' : 'DECLASSIFIED';
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-top">
+                            <div class="card-name">${p.name}</div>
+                            <div class="status-pill">
+                                <span class="${dotClass}"></span>
+                                <span>${p.status}</span>
+                            </div>
+                        </div>
+                        <div class="card-preview">
+                            <pre data-ascii="1">${ascii}</pre>
+                        </div>
+                        <div class="card-footer">
+                            <span>${p.access}</span>
+                            <span>${p.tags.slice(0, 2).join(' • ')}</span>
+                        </div>
+                    </div>
+                    <div class="declass-stamp">${stamp}</div>
+                    <div class="access-badge">ACCESS ${p.access}</div>
+                `;
+
+                // hover tilt + highlight tracking
+                const handleMove = (e) => {
+                    const r = card.getBoundingClientRect();
+                    const x = (e.clientX - r.left) / r.width;
+                    const y = (e.clientY - r.top) / r.height;
+                    card.style.setProperty('--mx', `${x * 100}%`);
+                    card.style.setProperty('--my', `${y * 100}%`);
+                    const tiltX = (0.5 - y) * 8;
+                    const tiltY = (x - 0.5) * 10;
+                    card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(0.01px)`;
+                };
+
+                const reset = () => {
+                    card.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0.01px)`;
+                };
+
+                let frame = 0;
+                let hoverTimer = null;
+                const pre = () => card.querySelector('pre[data-ascii="1"]');
+                const startAsciiAnim = () => {
+                    if (hoverTimer) return;
+                    hoverTimer = setInterval(() => {
+                        frame++;
+                        const el = pre();
+                        if (!el) return;
+                        el.textContent = genAsciiPreview(p.id, frame);
+                    }, 160);
+                };
+                const stopAsciiAnim = () => {
+                    if (hoverTimer) {
+                        clearInterval(hoverTimer);
+                        hoverTimer = null;
+                    }
+                    const el = pre();
+                    if (el) el.textContent = genAsciiPreview(p.id, 0);
+                };
+
+                card.addEventListener('mousemove', handleMove, { passive: true });
+                card.addEventListener('mouseleave', () => { reset(); stopAsciiAnim(); });
+                card.addEventListener('mouseenter', () => { startAsciiAnim(); });
+
+                card.addEventListener('click', () => openArchiveModal(p));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); openArchiveModal(p); }
+                    if (e.key === 'Escape') { e.preventDefault(); closeArchiveModal(); }
+                });
+
+                grid.appendChild(card);
+                // stash first focus index
+                if (idx === 0) ensureArchiveHandlers.state = { idx: 0 };
+            });
+
+            const help = document.createElement('div');
+            help.className = 'archive-help';
+            help.textContent = "Tip: hover cards to declassify preview • click/Enter to expand • Esc closes.";
+
+            shell.appendChild(header);
+            shell.appendChild(grid);
+            shell.appendChild(help);
+
+            output.appendChild(shell);
+
+            // stagger-in cascade with motion blur trail
+            gsap.fromTo(shell.querySelectorAll('.archive-card'),
+                { y: 18, opacity: 0, filter: 'blur(10px)' },
+                { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.55, ease: 'power3.out', stagger: 0.05, delay: 0.06 }
+            );
+
+            ensureArchiveHandlers();
+            // focus first card for keyboard nav
+            const first = grid.querySelector('.archive-card');
+            if (first) setTimeout(() => first.focus({ preventScroll: true }), 150);
+        }
+
+        // ==================== TERMINAL LOGIC ====================
+        function executeCommand(cmd) {
+            if (!bootComplete) return;
+
+            const input = cmd || document.getElementById('terminalInput').value.trim();
+            if (!input) return;
+
+            if (!cmd) {
+                commandHistory.push(input);
+                historyIndex = commandHistory.length;
+                document.getElementById('terminalInput').value = '';
+            }
+
+            // Add command to output
+            addOutputLine(`> ${input}`, 'highlight');
+
+            // Process command
+            const args = input.split(' ');
+            const command = args[0].toLowerCase();
+
+            if (command === 'open' && args[1]) {
+                const project = args[1].toLowerCase();
+                if (PROJECTS[project]) {
+                    addOutputLine(PROJECTS[project], 'success');
+                } else {
+                    addOutputLine(`Error: Project '${args[1]}' not found in archive.`, 'error');
+                }
+            } else if (COMMANDS[command]) {
+                const result = COMMANDS[command].action();
+                if (result) {
+                    addOutputLine(result, 'system');
+                }
+                if (command === 'projects') {
+                    mountProjectsArchive();
+                }
+                if (SECTION_COMMANDS.has(command)) {
+                    NodeSphere.show();
+                } else if (command === 'clear' || command === 'exit') {
+                    NodeSphere.hide();
+                }
+            } else {
+                addOutputLine(`Command not found: ${command}`, 'error');
+                addOutputLine(`Type 'help' for available commands.`, 'system');
+            }
+
+            // Scroll to bottom
+            const mainContent = document.getElementById('mainContent');
+            mainContent.scrollTop = mainContent.scrollHeight;
+
+            // Check for easter egg
+            if (command === '1337') {
+                document.getElementById('easterEgg').classList.add('visible');
+            }
+        }
+
+        function addOutputLine(text, className = '') {
+            const output = document.getElementById('commandOutput');
+            const lines = text.split('\n');
+
+            lines.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = `output-line ${className}`;
+                // render as HTML so we can include colored spans; preserve spaces
+                div.innerHTML = line.replace(/ /g, '&nbsp;');
+                div.style.opacity = '0';
+                output.appendChild(div);
+
+                gsap.to(div, {
+                    opacity: 1,
+                    duration: 0.05,
+                    delay: index * 0.02,
+                    ease: 'none'
+                });
+            });
+        }
+
+        // ==================== CHAT MODAL ====================
+        function openChat() {
+            const modal = document.getElementById('chatModal');
+            modal.classList.add('active');
+            gsap.to(modal, {
+                opacity: 1,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            document.getElementById('chatInput').focus();
+        }
+
+        function closeChat() {
+            const modal = document.getElementById('chatModal');
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => {
+                    modal.classList.remove('active');
+                }
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const content = document.getElementById('chatContent');
+
+            // User message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-message user';
+            userDiv.textContent = message;
+            content.appendChild(userDiv);
+
+            input.value = '';
+            content.scrollTop = content.scrollHeight;
+
+            // Bot response
+            setTimeout(() => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'chat-message bot';
+
+                const responses = [
+                    "I'm just a terminal interface. Try using the commands in the main terminal for better results.",
+                    "Interesting question. Have you tried 'help' in the main terminal?",
+                    "I can connect you to the developer. Use 'contact' in the terminal.",
+                    "Processing... I'm a simple chatbot. The terminal has more intelligence.",
+                    "Affirmative. The system is functioning within normal parameters."
+                ];
+
+                botDiv.textContent = responses[Math.floor(Math.random() * responses.length)];
+                content.appendChild(botDiv);
+                content.scrollTop = content.scrollHeight;
+            }, 1000 + Math.random() * 1000);
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('terminalInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    document.getElementById('terminalInput').value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    document.getElementById('terminalInput').value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    document.getElementById('terminalInput').value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const input = document.getElementById('terminalInput');
+                const val = input.value.toLowerCase();
+                const matches = Object.keys(COMMANDS).filter(cmd => cmd.startsWith(val));
+                if (matches.length === 1) {
+                    input.value = matches[0];
+                }
+            }
+        });
+
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Focus input on click anywhere
+        document.addEventListener('click', (e) => {
+            if (bootComplete && !e.target.closest('.chat-modal') && !e.target.closest('.header-action') && !e.target.closest('.footer-right')) {
+                document.getElementById('terminalInput').focus();
+            }
+        });
+
+        // ==================== UTILITIES ====================
+        function formatUptime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days}d ${hours % 24}h ${minutes % 60}m`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
+        }
+
+        // ==================== INIT ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            runBootSequence();
+        });
+
+        // Prevent context menu
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.terminal-container')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
