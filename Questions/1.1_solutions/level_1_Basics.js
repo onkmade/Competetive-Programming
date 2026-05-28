@@ -206,19 +206,20 @@ class Playlist{
         this.songs = [];
     }
 
-    addSong(title, duration){
-        this.songs.push(`title: ${title}, duration: ${duration}`);
-        return this.songs.join('\n');
+    addSongs(title, duration){
+        this.songs.push({title: title, duration: duration});
+        return `${title} has been added to the ${this.name}`;
     }
 
     removeSong(title){
-        if(this.songs.includes(title)){
-            let index = this.songs.indexOf(title);
-            this.songs.splice(index, 1);
-        }
+        const index = this.songs.indexOf(this.songs[title]);
+        this.songs.splice(index, 1);
+        return `${title} has been removed from the ${this.name}`;
     }
 }
 
-const song1 = new Playlist("Sad Songs");
-console.log(song1.addSong("The Night We Met", "4:25"));
-console.log(song1.addSong("Love me", "3:25"));
+const playlist1 = new Playlist("My Fav");
+console.log(playlist1.addSongs('The Night We Met', '4:35'));
+console.log(playlist1.addSongs('Hell of Fame', '5:24'));
+console.log(playlist1.removeSong('The Night We Met'));
+console.log(playlist1);
