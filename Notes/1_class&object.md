@@ -386,3 +386,83 @@ Think of it like this:
 | --- | --- | --- |
 | **Outside** methods (`color = "blue"`) | It's a property declaration. JavaScript automatically moves it into the setup phase and adds `this.`. | **Yes** |
 | **Inside** methods (`make = make`) | It's standard functional code. JavaScript treats it as a local variable calculation. | **No** (You must type `this.` manually) |
+
+
+--- End of Notes -
+
+## 1. To Add / Remove Items
+
+### Mutates Original (In-Place)
+
+* `push(...items)` – Adds items to the **end** of the array; returns the new length.
+* `pop()` – Removes and returns the item from the **end** of the array.
+* `shift()` – Removes and returns the item from the **beginning** of the array.
+* `unshift(...items)` – Adds items to the **beginning** of the array; returns the new length.
+* `splice(pos, deleteCount, ...items)` – Deletes and/or inserts elements at any specified index; returns an array of the deleted items.
+
+### Returns New Array
+
+* `slice(start, end)` – Copies a specific segment of the array and returns it as a new array.
+* `concat(...items)` – Joins the array with other arrays or values and returns the combined result.
+
+---
+
+## 2. To Search Among Elements
+
+### Returns New Array
+
+* `filter(func)` – Evaluates all elements and returns a new array containing all items that pass the test condition.
+
+### Returns Primitive / Element (Does Not Mutate)
+
+* `indexOf(item, pos)` – Searches for `item` from left to right; returns its **index (number)** or `-1`.
+* `lastIndexOf(item, pos)` – Searches for `item` from right to left; returns its **index (number)** or `-1`.
+* `includes(value)` – Checks if an item exists; returns a **boolean (`true`/`false`)**. Handles `NaN` correctly.
+* `find(func)` – Evaluates elements and returns the **value of the first element** that passes the condition, or `undefined`.
+* `findIndex(func)` – Evaluates elements and returns the **index (number)** of the first element that passes the condition, or `-1`.
+* `findLastIndex(func)` – Evaluates elements from right to left; returns the **index (number)** of the last element that passes the condition, or `-1`.
+
+---
+
+## 3. To Transform or Reorder Arrays
+
+### Mutates Original (In-Place)
+
+* `sort(func)` – Reorders the elements of the array in-place and returns the mutated array.
+* `reverse()` – Flips the order of the elements in the array backwards in-place and returns it.
+
+### Returns New Array / New String
+
+* `map(func)` – Runs a function on every single element and returns a new array populated with the results.
+* `split(delim)` – *(String method)* Breaks a string apart into a brand-new array.
+* `join(glue)` – *(Array method)* Combines all array elements into a brand-new string.
+* `reduce(func, initial)` – Loops through the array to compute a single value (can be a new array, object, number, etc.) based on all elements.
+* `reduceRight(func, initial)` – Same as `reduce`, but processes elements from right to left.
+
+---
+
+## 4. To Iterate Over Elements
+
+### Returns Nothing (Does Not Mutate Structure)
+
+* `forEach(func)` – Iterates through the items like a loop to execute side effects. It always returns `undefined`.
+
+---
+
+## 5. Bonus / Advanced Methods
+
+### Mutates Original (In-Place)
+
+* `fill(value, start, end)` – Fills the array with a static repeating value from a start index to an end index.
+* `copyWithin(target, start, end)` – Copies a sequence of array elements within the array itself, overwriting existing values.
+
+### Returns New Array
+
+* `flat(depth)` – Unwraps sub-arrays up to a specified depth and returns a flattened new array.
+* `flatMap(func)` – Maps each element using a mapping function, then flattens the result by one level into a new array.
+
+### Returns Primitive (Does Not Mutate)
+
+* `Array.isArray(value)` – Checks if the passed value is an array; returns a **boolean (`true`/`false`)**.
+* `some(func)` – Checks if **at least one** element passes the condition; returns a **boolean (`true`/`false`)**.
+* `every(func)` – Checks if **all** elements pass the condition; returns a **boolean (`true`/`false`)**.

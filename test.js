@@ -1,9 +1,12 @@
-const users = [
-    {name: "Baka", id: "ZIB21142X"}, 
-    {name: "Esmo", id: "ZIB21143Z"},
-    {name: "Burga", id: "ZIB21144"}
+const heroes = [
+    {name: "Spider-man", age: 18 },
+    {name: "Superman", age: "unknown"},
+    {name: "Iron-man", age: 34},
+    {name: "Captain America", age: 54},
+    {name: "Batman", age: 38}
 ];
 
-users.find((item, index) => {
-    console.log(`This is ${item}, whose index is ${index}`);
-});
+
+for(let {name, age} of heroes){
+    console.log(`Hero name is ${name} and Age is ${age}`);
+}
