@@ -198,28 +198,92 @@ console.log(student1.removeSubject('Java'));
 console.log(student1.removeSubject('King'))
 console.log(student1.displaySubs());
 
+// Challenge 1.6
+console.log(lineSeperator(6));
+class Product{
+    constructor(name, price = 0, quantity = 0){
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    getTotalValue(){
+        return this.price * this.quantity;
+    }
+
+    restock(amount){
+        if(amount <= 0) return "Invalid Amount";
+
+        return this.quantity += amount;
+    }
+
+    sell(amount){
+        if(amount <= 0) return "Invalid Amount";
+        if(amount > this.quantity) return "Not Enough Stock Available to Complete the Sell"
+        
+
+        return this.quantity -= amount;
+    }
+}
+
+const products = [
+    new Product("Mouse", 250, 2), // 500
+    new Product("Tablet", 15000, 3), // 45000
+    new Product('C-port', 1200, 2) // 2400
+];
+
+function calcInventory(product_list){
+    let grandTotal = 0;
+
+    for(let item of product_list){
+        grandTotal += item.getTotalValue();
+    }
+
+    return grandTotal;
+}
+
+console.log(calcInventory(products)); // 47900
+
+
 // Challenge 1.7
 console.log(lineSeperator(7));
+
 class Playlist{
     constructor(name){
         this.name = name;
         this.songs = [];
     }
 
-    addSongs(title, duration){
-        this.songs.push({title: title, duration: duration});
-        return `${title} has been added to the ${this.name}`;
+    addSong(title, duration){
+        this.songs.push({title: title, duration:duration});
+        return `${title} has been added to ${this.name}`;
     }
 
+
     removeSong(title){
-        const index = this.songs.indexOf(this.songs[title]);
-        this.songs.splice(index, 1);
-        return `${title} has been removed from the ${this.name}`;
+        let index = this.songs.findIndex( item => item.title === title);
+        if(index !== -1){
+            this.songs.splice(index, 1);
+            return `${title} removed`;
+        }
+
+        return "Not Found";
+    }
+
+    getTotalDuration(){
+        let countDuration = 0;
+        for(let {duration} of this.songs){
+            countDuration += duration;
+        }
+
+        return countDuration;
     }
 }
 
-const playlist1 = new Playlist("My Fav");
-console.log(playlist1.addSongs('The Night We Met', '4:35'));
-console.log(playlist1.addSongs('Hell of Fame', '5:24'));
-console.log(playlist1.removeSong('The Night We Met'));
-console.log(playlist1);
+const song = new Playlist('MahSongs');
+const added1 = song.addSong("The Night We Met", 4);
+const added2 = song.addSong("Khoya Hain", 5);
+const added3 = song.addSong("Ramayana", 3);
+const added4 = song.addSong("Runaway", 4);
+const removed = song.removeSong('The Night We Met');
+console.log(song.getTotalDuration());
