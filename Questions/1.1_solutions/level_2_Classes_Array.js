@@ -46,42 +46,89 @@ console.log(groupedMovies(movies));
 
 // Challenge 2.2
 console.log(lineS(2));
-class Player{
-    constructor(name, score = 0, level = 0){
-        this.name = name;
-        this.score = score;
+class Player { 
+    constructor(name, score = 0, level = 0){ 
+        this.name = name; 
+        this.score = score; 
         this.level = level;
     }
 }
 
 const players = [
-    { name: "Alpha", score: 1200, level: 5 },
-    { name: "Bravo", score: 850, level: 3 },
-    { name: "Charlie", score: 2300, level: 9 },
-    { name: "Delta", score: 450, level: 1 },
-    { name: "Echo", score: 1600, level: 6 },
-    { name: "Foxtrot", score: 1950, level: 7 },
-    { name: "Golf", score: 1100, level: 4 },
-    { name: "Hotel", score: 3100, level: 10 },
-    { name: "India", score: 700, level: 2 },
-    { name: "Juliet", score: 1750, level: 6 }
+    { name : "Alpha" , score : 1200 , level : 5 },
+    { name : "Bravo" , score : 850 , level : 3 },
+    { name : "Charlie" , score : 2300 , level : 9 },
+    { name : "Delta" , score : 450 , level : 1 },
+    { name : "Echo" , score : 1600 , level : 6 },
+    { name : "Foxtrot" , score : 1950 , level : 7 },
+    { name : "Golf" , score : 1100 , level : 4 },
+    { name : "Hotel" , score : 3100 , level : 10 },
+    { name : "India" , score : 700 , level : 2 },
+    { name : "Juliet" , score : 1750 , level : 6 }
 ];
 
 const getTopPlayers = n => {
-    players.sort((a, b) => b.score - a.score );
-    return players.slice(0, n);
+    return players.toSorted((a, b) => b.score - a.score).slice(0, n);
 }
 
-const levelUpPlayers = minScore => {
-    let leveled = players.filter( player => player.score >= minScore);
-    return leveled.map( player => {
-        player.level++;
-        return player;
+const levelUpPlayers = minScore => { 
+    let leveled = players.filter(player => player.score >= minScore); 
+    
+    return leveled.map(player => {
+        return {
+            ...player,
+            level: player.level + 1
+        };
     });
 }
 
+
+console.log(levelUpPlayers(1000))
 console.log(getTopPlayers(5));
-console.log(levelUpPlayers(1000));
+console.log(players);
 
 // Challenge 2.3
 console.log(lineS(3));
+class Task{
+    constructor(description, category, urgent = false, done = false){
+        this.description = description;
+        this.category = category;
+        this.urgent = urgent;
+        this.done = done;
+    }
+}
+
+const tasks = [
+    new Task("Finish All Challenges Today", "Coding", true, false),
+    new Task("Buy groceries for the week", "Personal", false, true),
+    new Task("Schedule dentist appointment", "Health", false, false),
+    new Task("Fix bug in user authentication", "Coding", true, true),
+    new Task("Prepare slides for Monday presentation", "Work", true, false),
+    new Task("Go for a 30-minute run", "Health", false, true),
+    new Task("Review pull requests from team", "Coding", false, false),
+    new Task("Clean the kitchen and take out trash", "Personal", false, false),
+    new Task("Submit monthly expense report", "Work", true, false),
+    new Task("Read 10 pages of my book", "Personal", false, true),
+    new Task("Update API documentation", "Coding", false, false),
+    new Task("Reply to urgent client emails", "Work", true, true)
+];
+
+const urgentIncompleteTask = tasks => {
+    let grouped = [];
+    let filtered = tasks.filter(task =>{
+        if(task.urgent === true && task.done === false){
+            return task
+        }
+    });
+
+    for(let {category, description} of filtered){
+        if(!grouped[category]){
+            grouped[category] = []
+        }
+        grouped[category].push(description);
+    } 
+
+    return grouped;
+};
+
+console.log(urgentIncompleteTask(tasks));
