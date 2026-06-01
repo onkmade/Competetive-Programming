@@ -76,16 +76,16 @@ const levelUpPlayers = minScore => {
     
     return leveled.map(player => {
         return {
-            ...player,
-            level: player.level + 1
+            ...player, // Copies the properties of player
+            level: player.level + 1 // overwrite the property level
         };
     });
 }
 
 
 console.log(levelUpPlayers(1000))
-console.log(getTopPlayers(5));
-console.log(players);
+// console.log(getTopPlayers(5));
+// console.log(players);
 
 // Challenge 2.3
 console.log(lineS(3));
@@ -131,4 +131,51 @@ const urgentIncompleteTask = tasks => {
     return grouped;
 };
 
+const doneTasks = (tasks, category) =>{
+    return tasks.map( task => {
+        if(task.category === category){
+            return {...task, done: true};
+        }
+        return task;
+    }).filter( task => task.category === category);
+}
+
 console.log(urgentIncompleteTask(tasks));
+console.log(doneTasks(tasks, "Coding"));
+console.log(tasks);
+
+// challenge 2.4
+console.log(lineS(4));
+class Employee{
+    constructor(name, department, salary, yearEmployed){
+        this.name = name;
+        this.department = department;
+        this.salary = salary;
+        this.yearEmployed= yearEmployed;
+    }
+}
+
+const employees = [
+    new Employee("Alice Smith", "Engineering", 85000, 2020),
+    new Employee("Bob Jones", "Marketing", 62000, 2022),
+    new Employee("Charlie Brown", "Engineering", 95000, 2018),
+    new Employee("Diana Prince", "Human Resources", 68000, 2021),
+    new Employee("Evan Wright", "Sales", 55000, 2023),
+    new Employee("Fiona Gallagher", "Finance", 78000, 2019),
+    new Employee("George Clark", "Engineering", 110000, 2015),
+    new Employee("Hannah Abbott", "Marketing", 64000, 2021),
+    new Employee("Ian Malcolm", "Data Science", 105000, 2017),
+    new Employee("Julia Roberts", "Human Resources", 72000, 2020),
+    new Employee("Kevin Bacon", "Sales", 58000, 2024),
+    new Employee("Laura Croft", "Security", 80000, 2016),
+    new Employee("Michael Scott", "Management", 75000, 2013),
+    new Employee("Nadia Comaneci", "Finance", 82000, 2018),
+    new Employee("Oscar Martinez", "Finance", 79000, 2014)
+];
+
+const avgSalaryPerDepartment = employees => {
+    const filtered = new Set(employees.map( emp => emp.department));
+    return filtered;
+}
+
+console.log(avgSalaryPerDepartment(employees));
