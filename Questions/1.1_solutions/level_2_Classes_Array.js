@@ -174,8 +174,170 @@ const employees = [
 ];
 
 const avgSalaryPerDepartment = employees => {
-    const filtered = new Set(employees.map( emp => emp.department));
-    return filtered;
+    let grouped = {};
+    
+    for(let {department, salary} of employees){
+        if(!grouped[department]){
+            grouped[department] = {totalSalary: 0, departmentCount: 0};
+        }
+
+        grouped[department].totalSalary += salary;
+        grouped[department].departmentCount += 1;
+    }
+
+    let dep = {};
+
+    for(let ok in grouped){
+        let {totalSalary, departmentCount} = grouped[ok];
+
+        dep[ok] = Math.floor( totalSalary / departmentCount);
+    }
+
+    return dep;
 }
 
+const tenPercentRaise = employees => {
+    const currentYear = new Date().getFullYear();
+
+    return employees.map( ep => {
+        const yearEmployed = currentYear - ep.yearEmployed;
+
+        if(yearEmployed > 5){
+            return {
+                ...ep,
+                salary: ep.salary + Math.floor((ep.salary * 10) / 100)
+            }
+        }
+
+        return {...ep}
+    });
+};
+
 console.log(avgSalaryPerDepartment(employees));
+console.log(tenPercentRaise(employees));
+
+
+// challenge 2.5
+console.log(lineS(5));
+class FoodItem{
+    constructor(name, calories, protein, carbs){
+        this.name = name;
+        this.calories = calories;
+        this.protein = protein;
+        this.carbs = carbs;
+    }
+}
+
+const foodMenu = [
+    new FoodItem("Grilled Chicken Breast", 165, 31, 0),
+    new FoodItem("Brown Rice (1 cup cooked)", 215, 5, 45),
+    new FoodItem("Atlantic Salmon", 206, 22, 0),
+    new FoodItem("Sweet Potato (medium)", 103, 2, 24),
+    new FoodItem("Whole Egg", 78, 6, 0.6),
+    new FoodItem("Greek Yogurt (Plain, Non-fat)", 100, 17, 6),
+    new FoodItem("Almonds (1 oz / 23 nuts)", 164, 6, 6),
+    new FoodItem("Avocado (medium)", 240, 3, 12),
+    new FoodItem("Oatmeal (1 cup cooked)", 166, 6, 28),
+    new FoodItem("Banana (medium)", 105, 1.3, 27),
+    new FoodItem("Broccoli (1 cup chopped)", 31, 2.5, 6),
+    new FoodItem("Spinach (2 cups raw)", 14, 2, 2),
+    new FoodItem("Quinoa (1 cup cooked)", 222, 8, 39),
+    new FoodItem("Cottage Cheese (1% fat, 1 cup)", 163, 28, 6.1),
+    new FoodItem("Apple (medium)", 95, 0.5, 25),
+    new FoodItem("Peanut Butter (2 tbsp)", 188, 8, 6),
+    new FoodItem("Black Beans (1 cup cooked)", 227, 15, 41),
+    new FoodItem("White Bread (1 slice)", 75, 2, 15),
+    new FoodItem("Dark Chocolate (1 oz)", 170, 2, 13),
+    new FoodItem("Whey Protein Isolate (1 scoop)", 120, 25, 2)
+];
+
+const getHighProteinItems = minProtein => {
+    return foodMenu.filter( food => food.protein > minProtein);
+};
+
+
+/* const getDailyTotals = (selectedItems) =>{
+    const dailyTotals = {calories: 0, protein: 0, crabs: 0}
+    const filtered = foodMenu.filter( food => {
+        return selectedItems.some( item => {
+            if(food.name.startsWith(item)){
+                dailyTotals.calories += food.calories;
+                dailyTotals.protein += food.protein;
+                dailyTotals.crabs += food.carbs
+            }
+        });
+    });
+
+    return dailyTotals;
+}
+ */
+
+const getDailyTotals = (...selectedItems) => {
+    return selectedItems.reduce((totals, itemName) =>{
+        // Grilled Chicken - 1
+        const match = foodMenu.find( food => food.name.startsWith(itemName));
+        // find the 1st element with start with "Grilled Chicken" in the foodMenu and return the complete element
+        // that passes the test implemented by the function
+
+        if(match)
+        {
+            totals.calories += match.calories;
+            totals.protein += match.protein;
+            totals.carbs += match.carbs;
+        }
+
+        return totals;
+    }, {calories: 0, protein: 0, carbs: 0});
+};
+
+// console.log(getDailyTotals("Grilled Chicken", "Whole Egg", "Almonds"));
+// console.log(getHighProteinItems(12));
+
+
+// Challenge 2.6
+console.log(lineS(6))
+class Customer{
+    constructor(name, id, orders = [], isVIP = false){
+        this.name = name;
+        this.id = id;
+        this.orders = orders;
+        const totalSpend = this.orders.reduce((acc, sum) => acc + sum, 0);
+        // since the array of order amounts, we need a single value to test it
+        this.isVIP = isVIP || totalSpend > 1000
+    }
+}
+
+const customers = [
+    new Customer("Alice Smith", 101, [120, 85, 45]),
+    new Customer("Bob Jones", 102, [50, 30]),
+    new Customer("Charlie Brown", 103, [200, 150, 300]),
+    new Customer("Diana Prince", 104, [500, 600]),        // Total: $1100 -> Should be VIP
+    new Customer("Evan Wright", 105, [1200]),            // Total: $1200 -> Should be VIP
+    new Customer("Fiona Gallagher", 106, [350, 450, 250]), // Total: $1050 -> Should be VIP
+    new Customer("George Clark", 107, [100, 50]),
+    new Customer("Hannah Abbott", 108, []),
+    new Customer("Ian Malcolm", 109, [999]),               // Total: $999 -> Not quite VIP
+    new Customer("Julia Roberts", 110, [15, 40, 100, 25])
+];
+
+const getVIPcustomers = (customers) => {
+    return customers.filter( cus => cus.isVIP === true);
+}
+
+const newVIPList = (amount, id) => {
+    const foundCustomer = customers.find( (customer) => customer.id === id);
+
+    if(foundCustomer){
+        foundCustomer.orders = [...foundCustomer.orders, amount];
+
+        const totalOrder = foundCustomer.orders.reduce( (sum, cus) => sum + cus, 0);
+
+        foundCustomer.isVIP = totalOrder > 1000;
+    }
+
+    return customers.filter( customer => customer.isVIP === true);
+}
+
+
+console.log(newVIPList(1000, 107));
+console.log(getVIPcustomers(customers));
