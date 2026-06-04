@@ -527,7 +527,7 @@ const getLikedSongs = () => {
             grouped[song.artist] = [];
         }
 
-        grouped[song.artist].push(song.title);
+        grouped[song.artist].push(song.name);
 
         return grouped;
     }, []);
@@ -540,6 +540,7 @@ console.log("Toggled Song: ", toggleLike("Billie Jean"), "\n");
 
 
 // Challenge 2.10
+console.log(lineS(10));
 class Project{
     constructor(name, status, teamMembers = [], budget){
         this.name = name;
@@ -574,3 +575,44 @@ class Project{
     - The Location holds       -> The actual Object Data.
     */
 }
+
+const projects = [
+    new Project("Alpha Mobile App", "Active", ["Alice", "Bob", "Charlie"], 45000),
+    new Project("Beta Cloud Migration", "Pending", ["David", "Eva"], 85000),
+    new Project("Gamma Cyber Security Audit", "Completed", ["Frank", "Grace", "Heidi"], 20000),
+    new Project("Delta Frontend Redesign", "Active", ["Ivan", "Judy"], 35000),
+    new Project("Epsilon Data Pipeline", "Active", ["Mallory", "Nels", "Oscar"], 60000),
+    new Project("Zeta Marketing Campaign", "Cancelled", ["Peggy", "Trent"], 15000),
+    new Project("Eta AI Model Training", "Pending", ["Alice", "Charlie", "Walter"], 120000),
+    new Project("Theta Database Optimization", "Completed", ["Bob", "Eve"], 25000)
+];
+
+const getActiveProjects = () => {
+    return projects
+    .filter( project => project.status === 'Active')
+    .toSorted( (a, b) => b.budget - a.budget);
+}
+
+const addMember = (projectName, member) => {
+    const foundProject = projects.find( project => project.name === projectName);
+
+    if(!foundProject){
+        return "Invalid Project Name"
+    }
+
+    if(foundProject.status === 'Active' && foundProject.teamMembers.length < 5){
+        foundProject.teamMembers.push(member);
+    } else {
+        return "Project is not Actiive or Member are more than 5";
+    }
+
+    return {
+        status: "Success", 
+        addedTo: projectName,
+        teamMembers: foundProject.teamMembers
+    }
+}
+
+console.log(getActiveProjects());
+console.log(addMember("Epsilon Data Pipeline", "Baka"));
+console.log(projects);
