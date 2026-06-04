@@ -539,3 +539,38 @@ console.log("Most Played Songs", (getMostPlayed(5)), "\n");
 console.log("Toggled Song: ", toggleLike("Billie Jean"), "\n");
 
 
+// Challenge 2.10
+class Project{
+    constructor(name, status, teamMembers = [], budget){
+        this.name = name;
+        this.status = status;
+        this.teamMembers = teamMembers;
+        this.budget = budget;
+    }
+
+    /* 
+    Revision: How `this` and the `new` keyword work under the hood
+
+    When you invoke a constructor function using the `new` keyword, 4 things happen sequentially behind the scenes:
+
+    1. A blank, empty object is allocated inside the memory:
+    {}
+
+    2. JavaScript automatically binds (points) the `this` keyword to that fresh, empty object:
+    this = {}; // (Done implicitly by the engine)
+
+    3. When the constructor executes lines like `this.name = name`, those properties are created directly inside that object in memory:
+    this = {
+        name: name
+    };
+
+    4. Once the constructor finishes executing, it automatically returns the populated `this` object, which is then assigned to your instance variable.
+
+    5. Therefore, a class instance does not hold the actual data directly; instead, it holds a reference pointer to the exact location of that object in memory.
+
+    Summary of the Memory Model:
+    - Variable holds           -> The Memory Address (Pointer).
+    - Memory Address points to -> The specific location in the Heap memory.
+    - The Location holds       -> The actual Object Data.
+    */
+}
