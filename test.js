@@ -1,6 +1,7 @@
-function showFormat(name, superhero, code) {
-    return {name, superhero, code};
-}
+const classrooms = [
+    {roomNumber: 101, teacher: "Esmo", students: ["Baka", "Ciel", "Enfraxx", "Example"]},
+    {roomNumber: 102, teacher: "Acul", students: ["Naruto", "Sasuke", "Sakura", "Sai"]},
+    {roomNumber: 103, teacher: "Itachi", students: ["Yamato", "Shishu", "Baka"]}
+];
 
-const {name, superhero, code} = showFormat("Baka", "IronMan", "ZIB14440xAD");
-console.log(`name is ${name}`);
+console.log(classrooms[0].students.includes("Baka"));

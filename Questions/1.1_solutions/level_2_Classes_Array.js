@@ -341,3 +341,161 @@ const newVIPList = (amount, id) => {
 
 console.log(newVIPList(1000, 107));
 console.log(getVIPcustomers(customers));
+
+
+// Challenge 2.7
+console.log(lineS(7));
+class Classroom{
+    constructor(roomNumber, teacher, students = []){
+        this.roomNumber = roomNumber;
+        this.teacher = teacher;
+        this.students = students;
+    }
+}
+
+const classrooms = [
+    new Classroom(101, "Esmo", ["Baka", "Cornpotato", "ionide", "chessburga", "Ciel"]),
+    new Classroom(102, "Valo", ["Phoenix", "Jett", "Omen", "Sage", "Reyna"]),
+    new Classroom(103, "Apex", ["Wraith", "Baka", "Horizon", "Pathfinder"]),
+    new Classroom(104, "Teyvat", ["Aether", "Lumine", "Paimon", "Zhongli", "Venti"]),
+    new Classroom(105, "Limgrave", ["Tarnished", "Melina", "Blaidd", "Ranni"])
+];
+
+const findStudent = (studentName) => {
+    const foundClassrooms = classrooms.filter( classroom => 
+        classroom.students.includes(studentName)
+    );
+
+    return foundClassrooms.map( student => student.roomNumber).join(', ');
+}
+
+const transferStudent = (name, fromRoom, toRoom) => {
+    const foundClassroom = classrooms.find( classroom => 
+        classroom.roomNumber === fromRoom && classroom.students.includes(name)
+    );
+
+    const transferClassroom = classrooms.find( classroom =>
+        classroom.roomNumber === toRoom
+    );
+
+
+    if(!foundClassroom || !transferClassroom){
+        return {
+            status: "Failed",
+            reason: "Invalid Student Name or Room Number"
+        }
+    }
+
+    const prevClassroom = {...foundClassroom, students: [...foundClassroom.students]};
+    const studentIndex = foundClassroom.students.indexOf(name);
+    foundClassroom.students.splice(studentIndex, 1);
+    transferClassroom.students.push(name);
+
+
+    return {
+        status: "Success",
+        fromRoom,
+        toRoom, 
+        prevClassroom,
+        currentClassroom: transferClassroom
+    }
+}
+
+console.log("Student RoomNumber is: ", findStudent("Baka"));
+console.log(transferStudent("Baka", 103, 105));
+console.log(transferStudent("Baka", 103, 115));
+console.log("Student RoomNumber is: ", findStudent("Baka"));
+
+
+// Challenge 2.8
+console.log(lineS(8));
+class GameCharacter{
+    constructor(name, health, attackPower, inventory = []){
+        this.name = name;
+        this.health = health;
+        this.attackPower = attackPower;
+        this.inventory = inventory;
+    }
+};
+
+const characters = [
+    new GameCharacter("Luffy", 100, 85, ["Straw Hat", "Meat Trunk", "Den Den Mushi"]),
+    new GameCharacter("Zoro", 90, 95, ["Wado Ichimonji", "Sandai Kitetsu", "Shusui", "Sake Bottle"]),
+    new GameCharacter("Nami", 65, 50, ["Clima-Tact", "Log Pose", "Belly Pouch", "Map"]),
+    new GameCharacter("Usopp", 70, 55, ["Kuro Kabuto", "Pop Greens", "Impact Dial"]),
+    new GameCharacter("Sanji", 85, 80, ["Cigarette Lighter", "Chef Knife", "Recipe Book"]),
+    new GameCharacter("Chopper", 75, 45, ["Rumble Balls", "Medical Kit", "Cotton Candy"]),
+    new GameCharacter("Brook", 65, 75, ["Soul Solid", "Shark Guitar"])
+];
+
+const findWeakest = () => {
+    const weakestCharacter = characters.reduce( (lowest, current) => 
+        current.health < lowest.health ? current: lowest
+    );
+
+    const allWeakCharacter = characters.filter( character => character.health === weakestCharacter.health);
+
+    return allWeakCharacter.map( char => char.name).join(', ');
+}
+
+// Function 2.8.2
+const equipItem = (CharacterName, item) => {
+    const foundCharacter =  characters.find(character => character.name === CharacterName);
+
+    if(!foundCharacter){
+        return "Character doesn't exit"
+    }
+
+    if(foundCharacter.inventory.length < 5){
+        foundCharacter.inventory.push(item);
+    } else {
+        return {
+            status: "Failed",
+            reason: "Inventory Holds Only 5 or less items"
+        };
+    }
+
+    return {
+        status: "Success", 
+        CharacterName,
+        item,
+        equipments: foundCharacter.inventory
+    }
+}
+
+console.log("Weakest character(s):", findWeakest()); // Output: Nami, Chopper
+
+console.log(equipItem("Sanji", "Mirchi Tadka Soup")); // Success (4 items)
+console.log(equipItem("Sanji", "Lavender Flowers"));   // Success (5 items)
+console.log(equipItem("Sanji", "Pokemon")); // Failed
+
+
+// Challenge 2.9
+console.log(lineS(9));
+class Song{
+    constructor(name, artist, plays, liked = false){
+        this.name = name;
+        this.artist = artist;
+        this.plays = plays;
+        this.liked = liked;
+    }
+}
+
+const songs = [
+    new Song("Bohemian Rhapsody", "Queen", 1200000000, true),
+    new Song("Blinding Lights", "The Weeknd", 4000000000, true),
+    new Song("Shape of You", "Ed Sheeran", 3800000000, false),
+    new Song("Billie Jean", "Michael Jackson", 1500000000, true),
+    new Song("Stay", "The Kid LAROI & Justin Bieber", 2800000000, false),
+    new Song("Hotel California", "Eagles", 1100000000, true),
+    new Song("As It Was", "Harry Styles", 2500000000, true),
+    new Song("Someone Like You", "Adele", 1600000000, false),
+    new Song("Smells Like Teen Spirit", "Nirvana", 1800000000, true),
+    new Song("Cruel Summer", "Taylor Swift", 1900000000, true),
+    new Song("Starboy", "The Weeknd", 3100000000, false),
+    new Song("Lose Yourself", "Eminem", 2000000000, true),
+    new Song("Bad Guy", "Billie Eilish", 2400000000, false),
+    new Song("Flowers", "Miley Cyrus", 1700000000, true),
+    new Song("Good 4 U", "Olivia Rodrigo", 2100000000, false)
+];
+
