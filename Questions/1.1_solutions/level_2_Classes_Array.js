@@ -433,6 +433,9 @@ const findWeakest = () => {
         current.health < lowest.health ? current: lowest
     );
 
+    // we can also use Reduce to find the minimum and maximum, since we compute all value into a single result
+    
+
     const allWeakCharacter = characters.filter( character => character.health === weakestCharacter.health);
 
     return allWeakCharacter.map( char => char.name).join(', ');
@@ -498,4 +501,41 @@ const songs = [
     new Song("Flowers", "Miley Cyrus", 1700000000, true),
     new Song("Good 4 U", "Olivia Rodrigo", 2100000000, false)
 ];
+
+const getMostPlayed = n => {
+    return songs.toSorted( (a, b) => b.plays - a.plays).slice(0, n);
+}
+
+const toggleLike = title => {
+    const foundSong = songs.find( song => song.name === title);
+
+    if(!foundSong){
+        return "Invalid Song, Cannot Find it in the songs";
+    }
+
+    let toggleLiked =  foundSong.liked === true ? false: true;
+    foundSong.liked = toggleLiked
+
+    return foundSong;
+}
+
+const getLikedSongs = () => {
+    return songs
+    .filter( song => song.liked)
+    .reduce( (grouped, song) => {
+        if(!grouped[song.artist]){
+            grouped[song.artist] = [];
+        }
+
+        grouped[song.artist].push(song.title);
+
+        return grouped;
+    }, []);
+}
+
+
+console.log("Liked Songs: ", getLikedSongs(), "\n");
+console.log("Most Played Songs", (getMostPlayed(5)), "\n");
+console.log("Toggled Song: ", toggleLike("Billie Jean"), "\n");
+
 
