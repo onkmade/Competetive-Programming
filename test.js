@@ -1,16 +1,26 @@
-const players = [
-    { name : "Alpha" , score : 1200 , level : 5 },
-    { name : "Bravo" , score : 850 , level : 3 },
-    { name : "Charlie" , score : 2300 , level : 9 },
-    { name : "Delta" , score : 450 , level : 1 },
-    { name : "Echo" , score : 1600 , level : 6 },
-    { name : "Foxtrot" , score : 1950 , level : 7 },
-    { name : "Golf" , score : 1100 , level : 4 },
-    { name : "Hotel" , score : 3100 , level : 10 },
-    { name : "India" , score : 700 , level : 2 },
-    { name : "Juliet" , score : 1750 , level : 6 }
+const users = [
+  { id: 1, name: "Alice Johnson", age: 28, email: "alice@example.com" },
+  { id: 2, name: "Bob Smith", age: 34, email: "bob.smith@example.com" },
+  { id: 3, name: "Charlie Brown", age: 19, email: "charlie@example.com" },
+  { id: 4, name: "Diana Prince", age: 31, email: "diana@example.com" },
+  { id: 5, name: "Evan Wright", age: 25, email: "evan.w@example.com" },
+  { id: 6, name: "Fiona Gallagher", age: 0, email: "fiona@example.com" },
+  { id: 7, name: "George Clark", age: 42, email: "" }
 ];
 
+const config = {
+    sortBy: "age",
+    order: "desc"
+}
 
-console.log(players.map( player => player.level)); // this will return the array of level only
-console.log(players.filter(player => player.level > 5)); // this will return the array of object of those player whose level is greater than 7
+function sortUser(users, config){
+    return users.sort((a, b) => {
+        const field = config.sortBy;
+        const aVal = a[field];
+        const bVal = b[field];
+
+        return config.order === 'desc' ? bVal - aVal : aVal - bVal;
+    });
+}
+
+console.log(sortUser(users, config));
