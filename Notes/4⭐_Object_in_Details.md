@@ -1,7 +1,3 @@
-I'll build you a comprehensive mental model for how objects actually work in real JavaScript programs. This is about *thinking like a developer*, not memorizing syntax.
-
----
-
 ## The Core Mental Model: Objects as "Labeled Containers of State"
 
 Forget the beginner definition ("objects are key-value pairs"). Here's how experienced developers actually think about them:
