@@ -111,8 +111,6 @@ const library = {
 
         return authorbooks.length > 0 ? authorbooks : `Not Found Any`;
     }
-
-
 };
 
 // Check the books array reference
@@ -120,4 +118,105 @@ const library = {
 // console.log(library.getAllBooks("Baka"));
 console.log(library.getAvailableBooksByAuthor("George Orwell"));
 
-// console.log(library.books);
+
+// Challenge 3.3
+console.log(lineS());
+const restaurant = {
+    // pre-populated menu: [...] array so you have plenty of data to test
+    // your complex lookup and filtering methods right away.
+    name: "Flavour Disc",
+    menu: [
+        {
+            category: "Appetizers",
+            items: [
+                { name: "Garlic Bread", price: 5.99, isVegetarian: true },
+                { name: "Chicken Wings", price: 9.99, isVegetarian: false },
+                { name: "Stuffed Mushrooms", price: 7.49, isVegetarian: true }
+            ]
+        },
+        {
+            category: "Main Course",
+            items: [
+                { name: "Margherita Pizza", price: 12.99, isVegetarian: true },
+                { name: "Beef Burger", price: 14.50, isVegetarian: false },
+                { name: "Paneer Tikka Masala", price: 13.99, isVegetarian: true },
+                { name: "Grilled Salmon", price: 18.99, isVegetarian: false }
+            ]
+        },
+        {
+            category: "Sides",
+            items: [
+                { name: "French Fries", price: 3.99, isVegetarian: true },
+                { name: "Caesar Salad", price: 6.50, isVegetarian: false }
+            ]
+        },
+        {
+            category: "Desserts",
+            items: [
+                { name: "Chocolate Brownie", price: 6.99, isVegetarian: true },
+                { name: "Apple Pie", price: 5.50, isVegetarian: true }
+            ]
+        }
+    ],
+
+    addItemToCategory(categoryName, itemName, price, isVegetarian){
+        const category = this.menu.find( c => c.category === categoryName);
+        if(!category) return `${categoryName} is not the menu`;
+
+        const newItem = {name: itemName, price, isVegetarian};
+        category.items.push(newItem);
+
+        return {
+            status: "Success", 
+            toCategory: category.category,
+            itemAdded: itemName, 
+            itemPrice: `$${price}`, 
+            isVegetarian, 
+
+        };
+    },
+
+    getVegetarianItems() {
+        const grouped = {};
+
+        this.menu.forEach(c => {
+            const veggiesItem = c.items.filter(item => item.isVegetarian);
+
+            if(veggiesItem.length > 0){
+                grouped[c.category] = veggiesItem.map( item => item.name);
+            }
+        });
+
+
+        return grouped;
+    },
+
+    getPriceRange(min, max){
+        const allItems = this.menu.flatMap( c => c.items );
+        return allItems.filter( item => item.price >= min && item.price <= max );
+    },
+
+    getTotalOrder(orderedItems){
+        const allItems = this.menu.flatMap( c => c.items);
+        return orderedItems.reduce((sum, orderedItem) =>{
+            const menuItem = allItems.find( item => item.name === orderedItem);
+
+            if(menuItem){
+                sum += menuItem.price;
+            }
+
+            return sum;
+        }, 0);
+
+        /* 
+        1. Flatten all separate menu categories into a single 'allItems' array using .flatMap().
+        2. Use .reduce() on the input 'order' array to accumulate the total cost.
+        3. For each ordered item name, look up its corresponding object in 'allItems' to retrieve its price and add it to the sum.
+        */
+    }
+}
+
+// console.log(restaurant.addItemToCategory("Sides", "Chicken Burger", 2.99, false));
+// console.log(restaurant.getVegetarianItems());
+// console.log(restaurant.getPriceRange(5.5, 9.2));
+console.log(restaurant.getTotalOrder(["Caesar Salad", "Caesar Salad"]));
