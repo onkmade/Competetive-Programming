@@ -217,6 +217,117 @@ const restaurant = {
 }
 
 // console.log(restaurant.addItemToCategory("Sides", "Chicken Burger", 2.99, false));
-// console.log(restaurant.getVegetarianItems());
-// console.log(restaurant.getPriceRange(5.5, 9.2));
+console.log(restaurant.getVegetarianItems());
+console.log(restaurant.getPriceRange(5.5, 9.2));
 console.log(restaurant.getTotalOrder(["Caesar Salad", "Caesar Salad"]));
+
+
+// Challenge 3.4
+console.log(lineS());
+const hospital = {
+    name: "Hospital",
+    patients: [
+        {
+            id: 101,
+            name: "Alice Smith",
+            records: [
+                { date: "2025-03-12", diagnosis: "Acute Bronchitis", treatment: "Antibiotics and rest" },
+                { date: "2025-11-05", diagnosis: "Seasonal Allergies", treatment: "Antihistamines" }
+            ]
+        },
+        {
+            id: 102,
+            name: "Bob Jones",
+            records: [
+                { date: "2024-08-19", diagnosis: "Hypertension", treatment: "Beta-blockers and low-sodium diet" },
+                { date: "2025-02-14", diagnosis: "Hypertension Checkup", treatment: "Adjusted dosage" },
+                { date: "2026-05-20", diagnosis: "Type 2 Diabetes", treatment: "Metformin and glucose tracking" }
+            ]
+        },
+        {
+            id: 103,
+            name: "Charlie Brown",
+            records: [
+                { date: "2026-01-10", diagnosis: "Fractured Radius", treatment: "Cast application and pain management" }
+            ]
+        },
+        {
+            id: 104,
+            name: "Diana Prince",
+            records: [
+                { date: "2025-07-22", diagnosis: "Migraine", treatment: "Triptans and dark room rest" },
+                { date: "2026-04-11", diagnosis: "Migraine", treatment: "Preventative medication review" }
+            ]
+        },
+        {
+            id: 105,
+            name: "Evan Wright",
+            records: [
+                { date: "2025-09-30", diagnosis: "Gastroenteritis", treatment: "IV Fluids and bland diet" }
+            ]
+        }
+    ],
+
+    admitPatient(id, name){
+        const newPatient = { id, name, records: [] };
+        this.patients.push(newPatient);
+
+        return {
+            status: "Success", 
+            id, 
+            name
+        }
+    },
+
+    addRecordToPatient(id, date, diagnosis, treatment){
+        const patientId = this.patients.find( p => p.id === id );
+        if(!patientId) return `${id} not found`;
+
+        const newRecord = { date, diagnosis, treatment};
+        patientId.records.push(newRecord);
+
+        return {
+            status: "Success", 
+            patientId: id, 
+            date, 
+            diagnosis,
+            treatment
+        }
+    },
+
+    getPatientsByDiagnosis(diagnosisName){
+        const patients = this.patients.filter( p => {
+            return p.records.some( r => r.diagnosis === diagnosisName );
+        });
+
+        return patients.length > 0 ? patients : `Not Found`;
+    }
+
+    /* 
+    Mistake: Using Filter Method Incorrectly
+    -----------------------------------------------------------------
+    
+    THE MISTAKE:
+    Using an inner `p.records.filter(...)` inside an outer `this.patients.filter(...)`.
+
+    WHY IT BROKE:
+    1. The inner `.filter()` returns a new array (either full of records or empty `[]`).
+    2. In JavaScript, ALL arrays—including an empty array `[]`—evaluate to TRUTHY.
+    3. Because an empty array is truthy, the outer filter's callback function 
+    received a `true` signal for every single iteration.
+    4. Consequently, the outer filter blindly kept every single patient in the system,
+    regardless of whether they actually had the matching diagnosis.
+
+    THE FIX:
+    Swap the inner `.filter()` out for `.some()`. 
+    Unlike `.filter()`, `.some()` returns a strict primitive boolean (`true` or `false`).
+    The moment it finds a matching record, it hands a true boolean back to the 
+    outer filter, ensuring only the correct patients are kept.
+    -----------------------------------------------------------------
+    */
+};
+
+console.log(hospital.admitPatient(106, "Example"));
+console.log(hospital.addRecordToPatient(106, "2026-06-07", "HSAM Diseases", "Natural Treatment"));
+console.log(hospital.getPatientsByDiagnosis("Migraine"));
+// console.log(hospital.patients);
