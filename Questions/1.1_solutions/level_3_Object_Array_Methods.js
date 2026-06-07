@@ -369,5 +369,105 @@ const gradebook = {
             }
         }
     ],
+
+    addAssignment(name, totalPoints){
+        const newAssignment = { name, totalPoints, grades: {} }
+        this.assignments.push(newAssignment);
+
+        return {
+            status: "Success",
+            added: newAssignment,
+        };
+    }, 
+
+    addGrade(studentName, score, assignmentName){
+        const assignment = this.assignments.find( a => a.name === assignmentName);
+        if(!assignment) return `${assignmentName} not found`;
+
+        assignment.grades[studentName] = score;
+
+        return assignment;
+    },
+
+    getAllStudentsAvg(){
+        const allGrades = this.assignments.flatMap( a => a.grades);
+        const allScore = allGrades.flatMap( score => Object.values(score));
+
+        const totalScore = allScore.reduce( (sum, score) => sum + score, 0);
+        const avgScore = totalScore / allScore.length;
+
+        return avgScore.toFixed(2);
+    }, 
+
+    getClassAvg(assignmentName){
+        const assignment = this.assignments.find( a => a.name === assignmentName );
+        const scores = Object.values(assignment.grades);
+
+        const totalScore = scores.reduce( (sum, score) => sum + score, 0);
+
+        return (totalScore/scores.length).toFixed(2);
+
+    }, 
+
+    getStudentsBelow(threshold, assignmentName){
+        const assignment = this.assignments.find( a => a.name === assignmentName );
+        if(!assignment) return `${assignmentName} not found`;
+
+        const lowestScore = Object.entries(assignment.grades)
+        .filter(([studentName, score]) => score < threshold )
+        .map(([studentName, score]) => studentName);
+
+        return lowestScore.join('');
+    }
+
+    /* 
+    OBJECT REFLECTION & INLINE DESTRUCTURING
+    
+    -----------------------------------------------------------------
+    Given: const scores = { Baka: 90, Esmo: 85 };
+
+    • Object.keys(scores)   ➔ [ "Baka", "Esmo" ]
+    Extracts only the keys (property names) into a flat array of strings.
+
+    • Object.values(scores) ➔ [ 90, 85 ]
+    Extracts only the values into an array. Perfect for mathematical calculations.
+
+    • Object.entries(scores) ➔ [ ["Baka", 90], ["Esmo", 85] ]
+    Transforms the object into a multi-dimensional array of [key, value] pairs.
+    - Index 0: Always the Key (String)
+    - Index 1: Always the Value
+
+    ⚠️ RULE: These are STATIC methods. You cannot call `scores.values()`. 
+    You must pass the target object into the global Object master utility.
+
+
+    2. PARAMETER DESTRUCTURING --------------
+
+    When using array methods (like .filter, .map, or .forEach) on an 
+    array of entries, you can unpack the [key, value] pairs right at the 
+    function gateway instead of manually typing `pair[0]` and `pair[1]`.
+
+    Example:
+    .filter(([studentName, score]) => score < 70)
+
+    The Syntax Blueprint Breakdown:
+    • () = The standard arrow function parameter bucket.
+    • [] = The destructuring mode switch. It tells JS: "Expect an array here."
+    • [variable1, variable2] = Custom, semantic names you assign to 
+                            capture index 0 and index 1 respectively.
+
+    Behind the Scenes Process:
+    If JS processes the pair ["CornPotato", 60]:
+    1. It sees the [] in the parameters and breaks the incoming array apart.
+    2. It pours index 0 ("CornPotato") into your local variable `studentName`.
+    3. It pours index 1 (60) into your local variable `score`.
+    -----------------------------------------------------------------
+    */
 }
 
+
+gradebook.addAssignment("CSS Classes", 100);
+console.log(gradebook.addGrade("Baka", 100,"CSS Classes"));
+console.log(gradebook.getAllStudentsAvg());
+console.log(gradebook.getClassAvg("JS WorkBook"));
+console.log(gradebook.getStudentsBelow(70, "JS WorkBook"));
