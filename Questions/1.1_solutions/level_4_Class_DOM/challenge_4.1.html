@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 4.1</title>
+    <link rel="stylesheet" href="/src/output.css">
+    <!-- <link rel="stylesheet" href="/src/defaultCSS.css"> -->
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <div id="element"></div>
+        <!-- Removed margin conflict, added flex centering item layout if needed -->
+        <div class="flex space-x-3 gap-1.5">
+            <!-- Added text-white, removed 'm-1.5', added rounded corners and a hover effect -->
+            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Value</button>
+            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Step</button>
+            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Min</button>
+            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Max</button>
+        </div>
+    </div>
+    <script>
+        class Counter{
+            constructor(value, step, min, max){
+                this.value = value;
+                this.step = step;
+                this.min = min;
+                this.max = max;
+            }
+        }
+    </script>
+</body>
+</html>
