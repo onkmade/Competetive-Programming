@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 4.1 - Refactored</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body>
+    <div class="mx-auto p-6">
+        <div class="bg-slate-300 p-2 rounded-xl w-95 shadow-sm border-slate-400 border-2">
+            <div class="bg-white rounded-md border border-slate-400">
+                <p id="display-id" class="text-8xl text-center text-slate-600 py-2">0</p>
+                <div class="flex justify-between w-full p-2">
+                    <p id="min" class="text-slate-400">Min: 0</p>
+                    <p id="step" class="text-slate-400">Step: 1</p>
+                    <p id="max" class="text-slate-400">Max: 10</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 py-4 justify-center">
+                <button id="btn-1" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Increment</button>
+                <button id="btn-2" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Decrement</button>
+                <button id="btn-3" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Reset</button>
+                <button id="btn-4" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Double Step</button>
+            </div>
+            
+            <!-- Status feedback (new) -->
+            <p id="status" class="text-center text-sm text-red-500 h-5"></p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // MODEL: Counter class - ONLY data and rules, ZERO DOM
+        // ============================================================
+        
+        class Counter {
+            constructor(value = 0, step = 1, min = 0, max = 10) {
+                this._value = value;    // _ means "private by convention"
+                this._step = step;
+                this._min = min;
+                this._max = max;
+                this._initialValue = value; // Remember original for reset
+            }
+
+            // --- Getters (read state safely) ---
+            get value() { return this._value; }
+            get step() { return this._step; }
+            get min() { return this._min; }
+            get max() { return this._max; }
+
+            // --- Business logic checks ---
+            get canIncrement() {
+                return this._value + this._step <= this._max;
+            }
+
+            get canDecrement() {
+                return this._value - this._step >= this._min;
+            }
+
+            // --- Commands (return true if changed, false if blocked) ---
+            increment() {
+                if (!this.canIncrement) {
+                    return { success: false, reason: 'at_max', value: this._value };
+                }
+                this._value += this._step;
+                return { success: true, value: this._value };
+            }
+
+            decrement() {
+                if (!this.canDecrement) {
+                    return { success: false, reason: 'at_min', value: this._value };
+                }
+                this._value -= this._step;
+                return { success: true, value: this._value };
+            }
+
+            reset() {
+                this._value = this._initialValue;
+                this._step = 1; // Reset step too
+                return { success: true, value: this._value };
+            }
+
+            doubleStep() {
+                this._step *= 2; // ACTUALLY doubles the step property
+                return { success: true, value: this._value, newStep: this._step };
+            }
+        }
+
+        // ============================================================
+        // VIEW: DOM manipulation only, NO logic
+        // ============================================================
+        
+        class CounterView {
+            constructor() {
+                // Cache elements once
+                this.els = {
+                    display: document.getElementById('display-id'),
+                    min: document.getElementById('min'),
+                    step: document.getElementById('step'),
+                    max: document.getElementById('max'),
+                    status: document.getElementById('status'),
+                    buttons: {
+                        increment: document.getElementById('btn-1'),
+                        decrement: document.getElementById('btn-2'),
+                        reset: document.getElementById('btn-3'),
+                        doubleStep: document.getElementById('btn-4')
+                    }
+                };
+            }
+
+            // Single render method - updates EVERYTHING from state
+            render(counter, result = null) {
+                // Update display
+                this.els.display.textContent = counter.value;
+                
+                // Update metadata
+                this.els.min.textContent = `Min: ${counter.min}`;
+                this.els.step.textContent = `Step: ${counter.step}`;
+                this.els.max.textContent = `Max: ${counter.max}`;
+                
+                // Update button states (disabled when can't act)
+                this.els.buttons.increment.disabled = !counter.canIncrement;
+                this.els.buttons.decrement.disabled = !counter.canDecrement;
+                
+                // Status feedback
+                if (result && !result.success) {
+                    this.els.status.textContent = result.reason === 'at_max' 
+                        ? '⚠️ Already at maximum!' 
+                        : '⚠️ Already at minimum!';
+                } else if (result && result.newStep) {
+                    this.els.status.textContent = `Step doubled to ${result.newStep}!`;
+                } else {
+                    this.els.status.textContent = '';
+                }
+            }
+
+            // Wire events to handlers
+            bindIncrement(handler) {
+                this.els.buttons.increment.addEventListener('click', handler);
+            }
+            bindDecrement(handler) {
+                this.els.buttons.decrement.addEventListener('click', handler);
+            }
+            bindReset(handler) {
+                this.els.buttons.reset.addEventListener('click', handler);
+            }
+            bindDoubleStep(handler) {
+                this.els.buttons.doubleStep.addEventListener('click', handler);
+            }
+        }
+
+        // ============================================================
+        // CONTROLLER: Connects Model and View
+        // ============================================================
+        
+        class CounterController {
+            constructor(counter, view) {
+                this.counter = counter;
+                this.view = view;
+                this._bindEvents();
+                this.view.render(this.counter); // Initial render
+            }
+
+            _bindEvents() {
+                this.view.bindIncrement(() => this._handle('increment'));
+                this.view.bindDecrement(() => this._handle('decrement'));
+                this.view.bindReset(() => this._handle('reset'));
+                this.view.bindDoubleStep(() => this._handle('doubleStep'));
+            }
+
+            _handle(action) {
+                const result = this.counter[action](); // Call model method
+                this.view.render(this.counter, result); // Update view with result
+                console.log(`[${action}]`, result);
+            }
+        }
+
+        // ============================================================
+        // START
+        // ============================================================
+        
+        const app = new CounterController(
+            new Counter(0, 1, 0, 10),
+            new CounterView()
+        );
+    </script>
+</body>
+</html>

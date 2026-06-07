@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 4.2</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body>
+    <div class="mx-auto p-6">
+        <div class=" w-80 text-center flex flex-col p-2 rounded-xl">
+            <div id="display" class="bg-slate-200 px-4 py-4 rounded">
+                <p id="question" class="bg-slate-800 font-bold">
+                    Where do you find such gifs ??
+                </p>
+                <p id="answer" class="font-thin bg-slate-700">
+                    it's kermit, I found it from this section, just open up the emoji tab
+                </p>
+            </div>
+            <div class="p-2">
+                <button id="btn-1" class="bg-slate-600 text-white p-2 rounded px-4 cursor-pointer ">Prev</button>
+                <button id="btn-2" class="bg-slate-600 text-white p-2 rounded px-4 cursor-pointer ">Flip</button>
+                <button id="btn-3" class="bg-slate-600 text-white p-2 rounded px-4 cursor-pointer ">Next</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        class Flashcard{
+            constructor(question, answer, isFlipped = false){
+                this.question = question;
+                this.answer = answer;
+                this.isFlipped = isFlipped;
+            }
+        }
+
+        const flashcards = [
+            new Flashcard("What does HTML stand for?", "HyperText Markup Language"),
+            new Flashcard("What does CSS stand for?", "Cascading Style Sheets"),
+            new Flashcard("Which HTML tag is used to link a JavaScript file?", "The <script> tag"),
+            new Flashcard("What is the purpose of 'box-sizing: border-box' in CSS?", "It includes padding and borders in an element's total width and height."),
+            new Flashcard("What data type is used for true or false values?", "Boolean"),
+            new Flashcard("What keyword is used to create a constant variable in JS?", "const"),
+            new Flashcard("What Tailwind class adds padding of 1.5rem (24px) to all sides?", "p-6"),
+            new Flashcard("What DOM method selects an element by its unique ID?", "document.getElementById()"),
+            new Flashcard("What is a JavaScript class used for?", "It acts as a blueprint/template for creating objects."),
+            new Flashcard("What array method is used to add an item to the end of an array?", "push()")
+        ];
+    </script>
+</body>
+</html>

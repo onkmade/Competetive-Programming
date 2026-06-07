@@ -5,29 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Challenge 4.1</title>
     <link rel="stylesheet" href="/src/output.css">
-    <!-- <link rel="stylesheet" href="/src/defaultCSS.css"> -->
 </head>
 <body>
-    <div class="container mx-auto p-6">
-        <div id="element"></div>
-        <!-- Removed margin conflict, added flex centering item layout if needed -->
-        <div class="flex space-x-3 gap-1.5">
-            <!-- Added text-white, removed 'm-1.5', added rounded corners and a hover effect -->
-            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Value</button>
-            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Step</button>
-            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Min</button>
-            <button class="bg-blue-600 text-xl text-white p-2 rounded hover:bg-blue-700 transition m-1">Max</button>
+    <div class="mx-auto p-6">
+        <!-- BOX -->
+        <div class="bg-slate-300 p-2 rounded-xl w-95 shadow-sm border-slate-400 border-2">
+            <!-- Display -->
+            <div class="bg-white rounded-md border border-slate-400">
+                <p id="display-id" class="text-8xl text-center text-slate-600 py-2">0</p>
+                <div class="flex justify-between w-full p-2">
+
+                    <!-- Tracker -->
+                    <p id="min" class="text-slate-400 ">Min: 0</p>
+                    <p id="step" class="text-slate-400 ">Step: 1</p>
+                    <p id="max" class="text-slate-400 ">Max: 10</p>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex space-x-2 py-4 justify-center">
+                <button id="btn-1" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Increment</button>
+                <button id="btn-2" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Decrement</button>
+                <button id="btn-3" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Reset</button>
+                <button id="btn-4" class="p-1.5 rounded bg-slate-600 hover:bg-slate-800 text-white cursor-pointer">Double Step</button>
+            </div>
         </div>
     </div>
+    
     <script>
         class Counter{
-            constructor(value, step, min, max){
-                this.value = value;
+            constructor(displayEl, value = 0, step = 1, min = 0, max = 0){
+                this.initial = value;
+                this.value = this.initial;
                 this.step = step;
                 this.min = min;
                 this.max = max;
+                this.display = displayEl;
+                this.updateDisplay();
+            }
+
+            updateDisplay(){
+                this.display.textContent = this.value;
+            }
+
+            increment(){
+                if(this.value + this.step <= this.max){
+                    this.value += this.step;
+                } else {
+                    this.value = this.max
+                }
+
+                this.updateDisplay();
+            }
+
+            decrement(){
+                if(this.value - this.step >= this.min){
+                    this.value -= this.step;
+                } else {
+                    this.value = this.min;
+                }
+
+                this.updateDisplay();
+            }
+
+            reset(){
+                this.value  = this.initial;
+                this.updateDisplay();
+            }
+
+            doubleStep(){
+                if(this.value + (this.step * 2) <= this.max){
+                    this.value += (this.step * 2);
+                } else {
+                    this.value = this.max;
+                }
+
+                this.updateDisplay();
             }
         }
+
+        const display = document.getElementById('display-id');
+        const myCounter = new Counter(display,0, 1, 0, 10);
+        document.getElementById('btn-1').addEventListener('click', () => {
+            myCounter.increment();
+        });
+
+        document.getElementById('btn-2').addEventListener('click', () => {
+            myCounter.decrement();
+        });
+
+        document.getElementById('btn-3').addEventListener('click', () => {
+            myCounter.reset();
+        });
+
+        document.getElementById('btn-4').addEventListener('click', () => {
+            myCounter.doubleStep();
+        });
+
+
+        document.getElementById('min').textContent = `Min: ${myCounter.min}`;
+        document.getElementById('step').textContent = `Step: ${myCounter.step}`;
+        document.getElementById('max').textContent = `Max: ${myCounter.max}`;
     </script>
 </body>
 </html>
