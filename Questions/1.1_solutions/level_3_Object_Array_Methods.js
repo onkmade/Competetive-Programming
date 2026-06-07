@@ -301,12 +301,12 @@ const hospital = {
         });
 
         return patients.length > 0 ? patients : `Not Found`;
-    }
+    },
 
     /* 
     Mistake: Using Filter Method Incorrectly
     -----------------------------------------------------------------
-    
+
     THE MISTAKE:
     Using an inner `p.records.filter(...)` inside an outer `this.patients.filter(...)`.
 
@@ -325,9 +325,49 @@ const hospital = {
     outer filter, ensuring only the correct patients are kept.
     -----------------------------------------------------------------
     */
+
+    getPatientsWithNoRecords(){
+        const patient = this.patients.filter( p => p.records.length === 0 );
+        return patient;
+    }
+
 };
 
 console.log(hospital.admitPatient(106, "Example"));
+console.log(hospital.admitPatient(107, "Ex12"));
 console.log(hospital.addRecordToPatient(106, "2026-06-07", "HSAM Diseases", "Natural Treatment"));
 console.log(hospital.getPatientsByDiagnosis("Migraine"));
+console.log(hospital.getPatientsWithNoRecords());
 // console.log(hospital.patients);
+
+
+// Challenge 3.15
+console.log("\n\n\n================= Challenge 3.15 =================\n");
+const gradebook = {
+    assignments: [
+        {
+            name: "JS WorkBook",
+            totalPoints: 100, 
+            grades: {
+                "Baka": 90, 
+                "Esmo": 85,
+                "CornPotato": 60,
+                "ChessBurga": 100,
+                "Maxwell": 100
+            }
+        }, 
+
+        {
+            name: "Web-Development",
+            totalPoints: 100, 
+            grades: {
+                "Baka": 95, 
+                "Melody": 98,
+                "Ciel": 92,
+                "Etsi": 100,
+                "Eb": 100
+            }
+        }
+    ],
+}
+
