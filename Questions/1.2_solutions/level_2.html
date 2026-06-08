@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2: Functions + DOM</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="mx-auto px-6">
+    <div id="text">THIS IS OLD TEXT</div>
+    <input type="text" id="input" placeholder="Type Something" class="border-2 border-slate-500 rounded-md p-2">
+    <div id="output"></div>
+    <script>
+        // 11
+        function updateText(id, newText){
+            id.textContent = newText
+        }
+
+        const text = document.getElementById('text');
+        updateText(text, "THIS IS NEW TEXT");
+
+        // 12
+        const color = "#ff9142"
+        function setColor(id, color){
+            id.style.color = color
+        }
+
+        setColor(text, color);
+
+        // 13
+        function doubleSize(id){
+            const currentFontSize = parseInt(getComputedStyle(id).fontSize);
+            console.log(currentFontSize);
+        }
+
+        // 15
+        function appendText(id, text){
+            let wrap = '';
+            id.textContent += " " + text;
+        }
+
+        function resetStyles(id){
+            id.style.cssText = 'none';
+        }
+        function countChars(element) {
+            // Because 'element' is the HTML node, .textContent works perfectly!
+            const seq = element.textContent;
+            const seqLength = [...seq].length;
+            
+            console.log(seq, seqLength);
+            console.log(seqLength);
+        }
+
+        // 3. Call the function and pass the element into it
+        
+        countChars(text);
+        resetStyles(text);
+        appendText(text, "COOL");
+        countChars(text);
+
+        const inputId = document.getElementById('input');
+        const output = document.getElementById('output');
+
+        function mirrorInput(inputId, outputID) {
+            inputId.addEventListener('input', (e) => {
+                output.textContent = e.target.value;
+            });
+        }
+
+        mirrorInput(inputId, output);
+        </script>
+</body>
+</html>
