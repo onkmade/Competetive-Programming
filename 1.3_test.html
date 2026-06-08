@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions + DOM</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="mx-auto px-4">
+    <div id="display"></div>
+    <div id="ok" class="hidden">THIS IS SOMETHING</div>
+    <div id="text">THIS IS TEXT</div>
+    <script>
+        function updateDisplay(value){
+            const display = document.getElementById('display');
+            display.textContent = value;
+        }
+        updateDisplay(50);
+        
+        function toggleVisibility(element){
+            element.classList.toggle('hidden')
+        }
+        
+        const display = document.getElementById('ok');
+        toggleVisibility(display);
+
+        function setColor(id, color){
+            id.style.color = color;
+        }
+
+        const text = document.getElementById('text');
+        const color = "#ff9142"
+        setColor(text, color);
+
+    </script>
+</body>
+</html>
