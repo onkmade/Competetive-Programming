@@ -7,44 +7,44 @@
     <link rel="stylesheet" href="/src/output.css">
 </head>
 <body class="mx-auto p-4">
-    <div id="profile">
-
-    </div>
+    <div id="profile"></div>
     <script>
-        const user = {
-            name: "Baka",
-            age: Infinity,
-            email: "baka@gmail.com"
+        const generateID = () => {
+            return "ZIB" + Math.floor(Math.random() * 1000000);
         }
         
-        const userProfile = document.getElementById('profile');
-
-        function displayUser(user, id){
-            const name = document.createElement('p');
-            const age = document.createElement('p');
-            const email = document.createElement('p');
-
-            const arr = [name, age, email];
-
-            name.textContent = `Name: ${user.name}`;
-            age.textContent = `Age: ${user.age}`;
-            email.textContent = `Email: ${user.email}`;
-
-            arr.forEach( prop => {
-                prop.classList.add(
-                    'bg-slate-400',
-                    'w-60',
-                    'text-white',
-                    'rounded-sm',
-                    'm-1',
-                    'p-2'
-                );
-            })
-
-            id.append(name, age, email);
+        const user = {
+            name: "baka", 
+            age: Infinity,
+            email: "example@gmail.com",
+            id: generateID()
         }
 
-        displayUser(user, userProfile);
+        
+        console.log(generateID());
+
+        const displayContainer = document.getElementById('profile');
+
+        function displayUser(profileData, targetContainer){
+
+            Object.entries(profileData).forEach( ([key, value]) => {
+                const paraList = document.createElement('p');
+                const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+                paraList.textContent = `${formattedKey}: ${value}`;
+                paraList.classList.add(
+                    'bg-slate-400',
+                    'p-2',
+                    'm-2',
+                    'rounded-sm',
+                    'text-white', 
+                    'w-60'
+                );
+
+                targetContainer.appendChild(paraList);
+            });
+        }
+
+        displayUser(user, displayContainer);
     </script>
 </body>
 </html>
