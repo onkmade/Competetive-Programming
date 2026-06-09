@@ -7,6 +7,123 @@
     <link rel="stylesheet" href="/src/output.css">
 </head>
 <body class="mx-auto py-3">
+    <ul id="fruit-list" class="flex p-2 space-x-1.5 bg-slate-200 border border-slate-300 m-2 w-fit rounded-md"></ul>
+    <ul id="anime-list" class="flex p-2 space-x-1.5 border border-slate-300 m-2 w-fit rounded-md"></ul>
+    <button id="add-btn" class="bg-slate-500 px-3 py-1.5 text-white rounded-md text-center m-2 cursor-pointer">Add</button>
+
+    <div class="bg-slate-500 w-fit p-1 m-2 rounded-md">
+        <div id="color-box" class="size-30 rounded-md m"></div>
+    </div>
     
+    <button id="change-color-btn" class="bg-slate-500 px-3 py-1.5 text-white rounded-md text-center m-2 cursor-pointer">Change Color</button>
+
+    <ul id="students-list"></ul>
+    <ul id="library"></ul>
+    <script>
+        const fruitList = document.getElementById('fruit-list');
+
+        const fruits = ["Kiwi", "Orange", "Apple", "Mango", "Avacado"];
+        const fragment = document.createDocumentFragment();
+        fruits.forEach( fruit => {
+            const listItem = document.createElement('li');
+            listItem.textContent = fruit;
+            listItem.classList.add(  
+                'bg-slate-400', 
+                'p-2',
+                'text-white', 
+                'rounded-sm',
+            );
+            fragment.appendChild(listItem); 
+        });
+
+        fruitList.appendChild(fragment);
+
+        const animes = ["The One Piece", "Naruto", "Iron-Blooded Orphans", "Ne Zha", "The Legend of Hei"];
+        const animeList = document.getElementById('anime-list');
+        
+        const addBtn = document.getElementById('add-btn');
+        let index = 0;
+        
+        addBtn.addEventListener('click', (e) => {
+            if(index >= animes.length) return;
+            const listItem = document.createElement('li');
+            listItem.textContent = animes[index];
+            listItem.classList.add(
+                'bg-orange-400', 
+                'p-2',
+                'text-white', 
+                'rounded-sm',
+            )
+            animeList.appendChild(listItem);
+            index++;
+
+            if(index === animes.length){
+                addBtn.disabled = true;
+                addBtn.textContent = "No more anime to Add";
+                addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // 23
+        const pastelColors = [
+            "#FFB7B2", // Pastel Pink / Coral
+            "#FFDAC1", // Pastel Peach
+            "#E2F0CB", // Pastel Lime / Green
+            "#B5EAD7", // Pastel Mint
+            "#C7CEEA", // Pastel Lavender / Periwinkle
+            "#FFC6FF", // Pastel Magenta
+            "#BDB2FF", // Pastel Purple
+            "#A0C4FF", // Pastel Soft Blue
+            "#CAFFBF", // Pastel Light Green
+            "#FDFFB6"  // Pastel Pale Yellow
+        ];
+
+        const colorBox = document.getElementById('color-box');
+        const changeColorBtn = document.getElementById('change-color-btn');
+        
+        let colorIndex = 0;
+        colorBox.style.backgroundColor = pastelColors[colorIndex];
+
+        changeColorBtn.addEventListener('click', () => {
+            colorIndex = (colorIndex + 1) % pastelColors.length;
+            colorBox.style.backgroundColor = pastelColors[colorIndex];
+        });
+
+
+        const students = ["Alex", "Jordan", "Taylor", "Morgan", "Sam"];
+        const studentList = document.getElementById('students-list');
+
+        students.forEach( student => {
+            const listItem = document.createElement('p');
+            listItem.innerHTML = student;
+            studentList.appendChild(listItem);
+        });
+
+
+        const books = [
+            { title: "To Kill a Mockingbird", author: "Harper Lee" },
+            { title: "1984", author: "George Orwell" },
+            { title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+            { title: "The Hobbit", author: "J.R.R. Tolkien" },
+            { title: "Pride and Prejudice", author: "Jane Austen" },
+            { title: "Brave New World", author: "Aldous Huxley" }
+        ];
+
+        /* 
+        Using map to transform the array of object is also best,
+        since u learned it how do it with map method
+        */
+
+        const library = document.getElementById('library');
+
+        books.forEach( ({title, author}) => {
+            const bookItem = document.createElement('p');
+            bookItem.textContent = `The book ${title} of ${author}`;
+
+            library.appendChild(bookItem);
+        });
+
+        // rest are easy!
+    </script>
 </body>
 </html>
