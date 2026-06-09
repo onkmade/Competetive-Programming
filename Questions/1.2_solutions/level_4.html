@@ -118,7 +118,52 @@
         decrementBtn.addEventListener('click', () => {
             counter.decrement();
             counter.display('counter-display');
-        })
+        });
+
+
+        /* 
+        ==========================================================================
+        THE EXPLANATION COMMENTS (ALL AT THE END)
+        ==========================================================================
+
+        1. THE BLUEPRINT (class Counter)
+        - This is your structural template. Writing "class Counter" does not create 
+            an actual counter yet; it just creates the factory instructions.
+        - Inside, it has a constructor() which acts as the initialization phase. 
+        - The moment an object is built from this class, it automatically sets up 
+            its own internal STATE (memory) with "this.count = 0".
+
+        2. THE BEHAVIORS (increment() and decrement())
+        - These methods represent the BEHAVIOR layer. 
+        - They contain pure math logic and completely isolate themselves from the 
+            browser window or the HTML structure. 
+        - Running "this.count++" changes the numerical data in the computer's 
+            memory, keeping the logic independent from how things appear on screen.
+
+        3. WIRING THE JS TO DOM (display())
+        - This is your RENDER method. 
+        - It accepts a string parameter representing a target container ID. 
+        - It searches the DOM for that specific element, applies a defensive 
+            guardrail check ("if (display)") to ensure the page doesn't crash if an 
+            ID is missing, and updates the textContent using the exact value 
+            currently held in "this.count".
+
+        4. INSTANTIATION (new Counter())
+        - By running "const counter = new Counter()", you bring the blueprint to life. 
+        - The variable "counter" becomes a living INSTANCE in memory. 
+        - It officially inherits its own independent copy of the "count" property 
+            and all the methods you wrote inside the class.
+
+        5. INTERACTION SETUP (addEventListener)
+        - The code targets your physical HTML buttons and binds them to click events. 
+        - By wrapping the instance calls inside an arrow function "() => { ... }", 
+            you preserve the context of the keyword "this". 
+        - When a click happens, it tells the computer to run your logic first 
+            ("counter.increment()") to alter memory, and then execute your UI method 
+            second ("counter.display()") to push that updated data onto the screen 
+            sequentially.
+        */
+
     </script>
 </body>
 </html>
