@@ -7,12 +7,23 @@
     <link rel="stylesheet" href="/src/output.css">
 </head>
 <body class="mx-auto p-4">
+
     <div id="profile"></div>
+    <div id="total"></div>
+
+    <div class="bg-slate-300 w-60 p-2 rounded-md space-y-2 m-2">
+        <div id="counter-display" class="bg-white p-2 rounded-sm text-2xl text-slate-800">0</div>
+        <div class="flex space-x-1">
+            <button id="btn-1" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Increment</button>
+            <button id="btn-2" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Decrement</button>
+        </div>
+    </div>
+
     <script>
         const generateID = () => {
             return "ZIB" + Math.floor(Math.random() * 1000000);
         }
-        
+
         const user = {
             name: "baka", 
             age: Infinity,
@@ -20,9 +31,7 @@
             id: generateID()
         }
 
-        
-        console.log(generateID());
-
+        console.log(user.id)
         const displayContainer = document.getElementById('profile');
 
         function displayUser(profileData, targetContainer){
@@ -39,12 +48,77 @@
                     'text-white', 
                     'w-60'
                 );
-
+                
                 targetContainer.appendChild(paraList);
             });
         }
 
         displayUser(user, displayContainer);
+
+        const product = {
+            name: "Tablet",
+            price: 5.20,
+            quantity: 2
+        }
+
+        const totalDisplay = document.getElementById('total');
+
+        function getTotalPrice(product, targetContainer){
+            const totalPrice = product.price * product.quantity;
+            const newElement = document.createElement('p');
+
+            newElement.classList.add(
+                'bg-orange-400',
+                'p-2',
+                'm-2',
+                'rounded-sm',
+                'text-white', 
+                'w-60'
+            )
+            newElement.textContent = `$${totalPrice.toFixed(2)}`;
+            targetContainer.appendChild(newElement);
+        };
+
+
+        getTotalPrice(product, totalDisplay);
+
+
+        // Challenge 3.3
+        class Counter{
+            constructor(){
+                this.count = 0;
+            }
+
+            increment(){
+                this.count++;
+            }
+
+            decrement(){
+                this.count--;
+            }
+
+            display(targetContainer){
+                const display = document.getElementById(targetContainer);
+                if(display){
+                    display.textContent = this.count;
+                }
+            }
+        }
+
+        const incrementBtn = document.getElementById('btn-1');
+        const decrementBtn = document.getElementById('btn-2');
+
+        const counter = new Counter();
+        
+        incrementBtn.addEventListener('click', () => {
+            counter.increment();
+            counter.display('counter-display');
+        });
+
+        decrementBtn.addEventListener('click', () => {
+            counter.decrement();
+            counter.display('counter-display');
+        })
     </script>
 </body>
 </html>
