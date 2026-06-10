@@ -19,7 +19,9 @@
         </div>
     </div>
     
-    <div id="task-output"></div>
+    <div id="task-output">
+    </div>
+    <button id="sort-task" class="bg-slate-600 text-white p-2 rounded-sm m-2 cursor-pointer hover:bg-slate-700 transition duration-300 ease-in-out">Sort Task</button>
     
 
     <script>
@@ -163,6 +165,8 @@
             static renderAllItems(todoList, targetContainer){
                 const display = document.getElementById(targetContainer);
                 const fragment = document.createDocumentFragment();
+                
+                display.innerHTML = ` `;
 
                 todoList.forEach( task => {
                     const element = document.createElement('p');
@@ -179,10 +183,11 @@
 
                     if(task.completed){
                         element.classList.add(
+                            'text-slate-600',
                             'line-through',
                             'italic',
                             'opacity-50',
-                            'bg-blue-400'
+                            'bg-slate-400',
                         )
 
                     }
@@ -191,6 +196,19 @@
                 });
 
                 display.appendChild(fragment);
+            }
+
+            static isSorted = false;
+
+            static sortItems(todoList, targetContainer){
+                todoList.sort((a, b) => a.completed - b.completed);
+                TodoItem.renderAllItems(todoList, targetContainer);
+
+/*              console.log(false - true); // -1 
+                console.log(true - true); // 0  
+                console.log(true - false); // 1
+                console.log(false - false); // 0 */
+  
             }
         }
 
@@ -204,6 +222,19 @@
         ];
 
         TodoItem.renderAllItems(todos, 'task-output');
+
+        const sortTaskBtn = document.getElementById('sort-task');
+        const originalItems = [...todos];
+        // To Toggle the sort back to original, you need to copy the original state before sorting it!
+        sortTaskBtn.addEventListener('click', () => {
+            if(!TodoItem.isSorted){
+                TodoItem.sortItems(todos, 'task-output');
+                TodoItem.isSorted = true;
+            } else {
+                TodoItem.renderAllItems(originalItems, 'task-output');
+                TodoItem.isSorted = false;
+            }
+        });
 
         /* 
         =================================================================
