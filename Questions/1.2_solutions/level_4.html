@@ -10,7 +10,7 @@
 
     <div id="profile"></div>
     <div id="total"></div>
-
+    
     <div class="bg-slate-300 w-60 p-2 rounded-md space-y-2 m-2">
         <div id="counter-display" class="bg-white p-2 rounded-sm text-2xl text-slate-800">0</div>
         <div class="flex space-x-1">
@@ -18,6 +18,9 @@
             <button id="btn-2" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Decrement</button>
         </div>
     </div>
+    
+    <div id="task-output"></div>
+    
 
     <script>
         const generateID = () => {
@@ -148,6 +151,51 @@
             counter.decrement();               // Step 1: Changes the logic state in memory
             counter.display('counter-display'); // Step 2: Grabs the new state and updates the text on screen
         });
+
+
+        class TodoItem{
+            constructor(text, completed = false){
+                this.text = text;
+                this.completed = completed;
+            }
+
+            renderItems(targetContainer){
+                const display = document.getElementById(targetContainer);
+                const para = document.createElement('p');
+
+                para.textContent = this.text;
+
+                if(this.completed === true){
+                    para.style.textDecoration = 'line-through';
+                };
+
+                display.appendChild(para);
+            }
+        }
+
+        const taskNames = [
+            "Water the plants",
+            "Feed the cat",
+            "Read a book chapter",
+            "Gym workout",
+            "Reply to emails",
+            "Prepare dinner"
+        ];
+
+        const todoList = [];
+
+        taskNames.forEach( taskText => {
+            const newTodo = new TodoItem(taskText);
+            
+            todoList.push(newTodo);
+        });
+
+        console.log(todoList);
+
+        todoList.forEach( task => {
+            task.renderItems('task-output');
+        })
+
     </script>
 </body>
 </html>
