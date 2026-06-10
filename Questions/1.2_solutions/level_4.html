@@ -6,22 +6,53 @@
     <title>Level 4: Objects/Classes + DOM</title>
     <link rel="stylesheet" href="/src/output.css">
 </head>
-<body class="mx-auto p-4">
+<body class="mx-auto p-4 flex">
 
-    <div id="profile"></div>
-    <div id="total"></div>
-    
-    <div class="bg-slate-300 w-60 p-2 rounded-md space-y-2 m-2">
-        <div id="counter-display" class="bg-white p-2 rounded-sm text-2xl text-slate-800">0</div>
-        <div class="flex space-x-1">
-            <button id="btn-1" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Increment</button>
-            <button id="btn-2" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Decrement</button>
+    <!-- Section 1 -->
+    <div class>
+        <div id="profile"></div>
+        <div id="total"></div>
+        
+        <div class="bg-slate-300 w-60 p-2 rounded-md space-y-2 m-2">
+            <div id="counter-display" class="bg-white p-2 rounded-sm text-2xl text-slate-800">0</div>
+            <div class="flex space-x-1">
+                <button id="btn-1" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Increment</button>
+                <button id="btn-2" class="grow bg-slate-900 p-2 rounded-sm text-white cursor-pointer">Decrement</button>
+            </div>
+        </div>
+        
+        <div id="task-output">
+        </div>
+        <button id="sort-task" class="bg-slate-600 text-white p-2 rounded-sm m-2 cursor-pointer hover:bg-slate-700 transition duration-300 ease-in-out">Sort Task</button>
+    </div>
+
+    <!-- Section 2 -->
+
+
+    <!-- bank -->
+    <div>
+        <div id="bank-account" class="m-2 bg-slate-400 p-2 rounded-sm text-white w-60 space-y-2">
+            <h1 class="text-2xl font-bold">Bank Account</h1>
+            <div>
+                <div>
+                    <label for="owner">Owner: </label>
+                    <span id="owner"></span>
+                </div>
+                <div>
+                    <label for="amount">Balance:</label>
+                    <span id="balance-output">0</span>
+                </div>
+            </div>
+            <input type="number" name="Amount" min="0" id="amount" placeholder="Enter the Amount" class="bg-slate-300 placeholder:text-slate-700 p-2 rounded-sm w-full outline-none border-none text-slate-900">
+            <div class="flex space-x-2">
+                <button id="deposit" class="bg-slate-600 p-2 rounded-sm hover:bg-slate-700 grow cursor-pointer select-none">Deposit</button>
+                <button id="withdraw" class="bg-slate-600 p-2 rounded-sm hover:bg-slate-700 grow cursor-pointer">WithDraw</button>
+            </div>
+
+            <!-- Error Message -->
+            <p id="error-msg"></p>
         </div>
     </div>
-    
-    <div id="task-output">
-    </div>
-    <button id="sort-task" class="bg-slate-600 text-white p-2 rounded-sm m-2 cursor-pointer hover:bg-slate-700 transition duration-300 ease-in-out">Sort Task</button>
     
 
     <script>
@@ -218,7 +249,8 @@
             new TodoItem("Finish homework", true),
             new TodoItem("Read a book", false),
             new TodoItem("Finish JS Workbook", true),
-            new TodoItem("Watch Ippo Makanauchi", false)
+            new TodoItem("Watch Ippo Makanauchi", false),
+            new TodoItem("Something, I need to listen to no matter what it is", false)
         ];
 
         TodoItem.renderAllItems(todos, 'task-output');
@@ -230,9 +262,11 @@
             if(!TodoItem.isSorted){
                 TodoItem.sortItems(todos, 'task-output');
                 TodoItem.isSorted = true;
+                sortTaskBtn.textContent = "Undo"
             } else {
                 TodoItem.renderAllItems(originalItems, 'task-output');
                 TodoItem.isSorted = false;
+                sortTaskBtn.textContent = "Sort Task";
             }
         });
 
@@ -247,6 +281,95 @@
         call it directly on the class name (e.g., ClassName.methodName()).
         
         */
+
+        // Challenge 3.4
+        class BankAccount{
+            constructor(owner, balance){
+                this.owner = owner;
+                this.balance = balance;
+            }
+            
+            deposit(amount){
+                this.balance += amount;
+            }
+
+            withdraw(amount){
+                this.balance -= amount;
+            }
+
+            displayBalance(targetElement){
+                const display = document.getElementById(targetElement);
+
+                if(display){
+                    display.textContent = this.balance;
+                }
+            }
+
+            displayOwner(ownerID){
+                const display = document.getElementById(ownerID);
+                if(!display) return `Not Found ID`;
+
+                display.textContent = this.owner;
+            }
+
+            checkAmount(amount, targetContainer){
+                const displayError = document.getElementById(targetContainer);
+                if(!displayError) return `Not Found ${targetContainer}`;
+
+                displayError.classList.remove('hidden');
+                if(amount <= 0) {
+                    displayError.textContent = "Invalid Amount"
+                } else if ( amount > this.balance){
+                    displayError.textContent = "Balance is not Enough";
+                }
+
+                displayError.classList.add(
+                    'block', 
+                    'bg-red-400', 
+                    'p-2',
+                    'rounded-sm'
+                );
+
+                setTimeout(() => {
+                    displayError.classList.add('hidden');
+                    displayError.classList.remove('block', 'bg-red-400', 'p-2', 'rounded-sm');
+                    displayError.textContent = '';
+                }, 3000);
+            }
+        }
+
+
+        const bank1 = new BankAccount("Baka", 15000000000);
+        bank1.displayBalance('balance-output');
+        bank1.displayOwner('owner')
+        // States: 
+        const depositBtn = document.getElementById('deposit');
+        const withdrawBtn = document.getElementById('withdraw');
+        const inputAmount = document.getElementById('amount');
+
+        // Behaviour and Render: 
+        depositBtn.addEventListener('click', () => {
+            const amount = parseInt(inputAmount.value) || 0;
+            if(amount <= 0){
+                bank1.checkAmount(amount, 'error-msg');
+            } else {
+                bank1.deposit(amount);
+                bank1.displayBalance('balance-output');
+            }
+            inputAmount.value = '';
+        })
+
+        withdrawBtn.addEventListener('click', () => {
+            const amount = parseInt(inputAmount.value) || 0;
+            if(amount <= 0 || amount > bank1.balance){
+                bank1.checkAmount(amount, 'error-msg');
+            } else {
+                bank1.withdraw(amount);
+                bank1.displayBalance('balance-output');
+            }
+
+            inputAmount.value = '';
+        });
     </script>
 </body>
 </html>
