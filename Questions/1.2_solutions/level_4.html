@@ -33,14 +33,14 @@
     <div>
         <div id="bank-account" class="m-2 bg-slate-400 p-2 rounded-sm text-white w-60 space-y-2">
             <h1 class="text-2xl font-bold">Bank Account</h1>
-            <div>
+            <div class="bg-slate-300 text-slate-600 p-2 rounded-sm space-y-1">
                 <div>
                     <label for="owner">Owner: </label>
-                    <span id="owner"></span>
+                    <span id="owner" class="float-end"></span>
                 </div>
                 <div>
                     <label for="amount">Balance:</label>
-                    <span id="balance-output">0</span>
+                    <span id="balance-output" class="float-right">0</span>
                 </div>
             </div>
             <input type="number" name="Amount" min="0" id="amount" placeholder="Enter the Amount" class="bg-slate-300 placeholder:text-slate-700 p-2 rounded-sm w-full outline-none border-none text-slate-900">
@@ -282,9 +282,9 @@
         
         */
 
-        // Challenge 3.4
+        // Challenge 3.5
         class BankAccount{
-            constructor(owner, balance){
+            constructor(owner, balance = 0){
                 this.owner = owner;
                 this.balance = balance;
             }
@@ -333,13 +333,13 @@
                 setTimeout(() => {
                     displayError.classList.add('hidden');
                     displayError.classList.remove('block', 'bg-red-400', 'p-2', 'rounded-sm');
-                    displayError.textContent = '';
+                    displayError.textContent = '';    
                 }, 3000);
             }
         }
 
 
-        const bank1 = new BankAccount("Baka", 15000000000);
+        const bank1 = new BankAccount("Baka", 1000);
         bank1.displayBalance('balance-output');
         bank1.displayOwner('owner')
         // States: 
@@ -370,6 +370,9 @@
 
             inputAmount.value = '';
         });
+
+
+        // 
     </script>
 </body>
 </html>
