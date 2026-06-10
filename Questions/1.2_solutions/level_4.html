@@ -137,7 +137,7 @@
 
         // Set the initial display on the screen when the page first loads
         counter.display('counter-display');
-
+        
         // EVENT LISTENERS: Listen for click events and fire actions sequentially
         // CRITICAL: We use an arrow function wrapper () => { ... } so 'this' inside the 
         // class stays pointed at our 'counter' instance object, not the HTML button!
@@ -151,51 +151,71 @@
             counter.decrement();               // Step 1: Changes the logic state in memory
             counter.display('counter-display'); // Step 2: Grabs the new state and updates the text on screen
         });
+        
 
-
+        // Challenge 3.4
         class TodoItem{
             constructor(text, completed = false){
                 this.text = text;
                 this.completed = completed;
             }
 
-            renderItems(targetContainer){
+            static renderAllItems(todoList, targetContainer){
                 const display = document.getElementById(targetContainer);
-                const para = document.createElement('p');
+                const fragment = document.createDocumentFragment();
 
-                para.textContent = this.text;
+                todoList.forEach( task => {
+                    const element = document.createElement('p');
+                    element.textContent = task.text;
 
-                if(this.completed === true){
-                    para.style.textDecoration = 'line-through';
-                };
+                    element.classList.add(
+                        'bg-red-400',
+                        'p-2',
+                        'm-2',
+                        'rounded-sm',
+                        'text-white', 
+                        'w-60'
+                    );
 
-                display.appendChild(para);
+                    if(task.completed){
+                        element.classList.add(
+                            'line-through',
+                            'italic',
+                            'opacity-50',
+                            'bg-blue-400'
+                        )
+
+                    }
+
+                    fragment.appendChild(element);
+                });
+
+                display.appendChild(fragment);
             }
         }
 
-        const taskNames = [
-            "Water the plants",
-            "Feed the cat",
-            "Read a book chapter",
-            "Gym workout",
-            "Reply to emails",
-            "Prepare dinner"
+        const todos = [
+            new TodoItem("Buy groceries", false),
+            new TodoItem("Walk the dog", true),
+            new TodoItem("Finish homework", true),
+            new TodoItem("Read a book", false),
+            new TodoItem("Finish JS Workbook", true),
+            new TodoItem("Watch Ippo Makanauchi", false)
         ];
 
-        const todoList = [];
+        TodoItem.renderAllItems(todos, 'task-output');
 
-        taskNames.forEach( taskText => {
-            const newTodo = new TodoItem(taskText);
-            
-            todoList.push(newTodo);
-        });
+        /* 
+        =================================================================
+        Static Keyword: The Method or Field Belong to that Class itself
+        =================================================================
 
-        console.log(todoList);
-
-        todoList.forEach( task => {
-            task.renderItems('task-output');
-        })
-
+        Using static before a method or field means it belongs to the class itself
+        rather than to any specific object (instance) created from that class. 
+        You don't need to use the new keyword to instantiate the class; you just
+        call it directly on the class name (e.g., ClassName.methodName()).
+        
+        */
     </script>
 </body>
 </html>
