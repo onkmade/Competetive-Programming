@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 4: Objects/Classes + DOM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Freckle+Face&family=Londrina+Shadow&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com" rel="stylesheet">
     <link rel="stylesheet" href="/src/output.css">
 </head>
 <body class="mx-auto p-4 flex">
@@ -26,11 +30,12 @@
         <button id="sort-task" class="bg-slate-600 text-white p-2 rounded-sm m-2 cursor-pointer hover:bg-slate-700 transition duration-300 ease-in-out">Sort Task</button>
     </div>
 
+    
+    
     <!-- Section 2 -->
-
-
-    <!-- bank -->
     <div>
+
+        <!-- bank -->
         <div id="bank-account" class="m-2 bg-slate-400 p-2 rounded-sm text-white w-60 space-y-2">
             <h1 class="text-2xl font-bold">Bank Account</h1>
             <div class="bg-slate-300 text-slate-600 p-2 rounded-sm space-y-1">
@@ -52,8 +57,18 @@
             <!-- Error Message -->
             <p id="error-msg"></p>
         </div>
+
+
+        <!-- Dark mode/ Light mode -->
+        <div id="mode" class="bg-slate-950 w-60 h-40 m-2 rounded-md text-white p-2 flex flex-col justify-between">
+            <div class="flex flex-col justify-between h-full">
+                <h1 class="text-4xl font-['Freckle_Face']">The One Piece</h1>
+                <p>One Piece follows Monkey D. Luffy's quest to become the Pirate King and find the legendary treasure.</p>
+            </div>
+        </div>
     </div>
     
+
 
     <script>
         const generateID = () => {
@@ -372,7 +387,34 @@
         });
 
 
-        // 
+        // Challenge 3.8
+        const settings = {
+            theme: "dark", // "light" or 'dark'
+            fontSize: 16,
+            
+            applySettings(targetContainer) {
+                const display = document.getElementById(targetContainer);
+                if (!display) return `Not Found`;
+
+                display.style.fontSize = `${this.fontSize}px`;
+
+                if (this.theme === 'dark') {
+                    display.style.backgroundColor = 'black';
+                    display.style.color = 'white';
+                } else {
+                    display.style.backgroundColor = 'white';
+                    display.style.color = 'black';
+                    display.classList.add(
+                        'border-2',
+                        'bg-slate-300'
+                    )
+                }
+            }
+        };
+
+        // Execution
+        settings.applySettings('mode');
+
     </script>
 </body>
 </html>

@@ -20,11 +20,16 @@
     --color-slate-700: oklch(37.2% 0.044 257.287);
     --color-slate-800: oklch(27.9% 0.041 260.031);
     --color-slate-900: oklch(20.8% 0.042 265.755);
+    --color-slate-950: oklch(12.9% 0.042 264.695);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
     --text-8xl: 6rem;
     --text-8xl--line-height: 1;
     --font-weight-thin: 100;
@@ -284,6 +289,32 @@
     width: calc(var(--spacing) * 30);
     height: calc(var(--spacing) * 30);
   }
+  .size-40 {
+    width: calc(var(--spacing) * 40);
+    height: calc(var(--spacing) * 40);
+  }
+  .size-60 {
+    width: calc(var(--spacing) * 60);
+    height: calc(var(--spacing) * 60);
+  }
+  .h-40 {
+    height: calc(var(--spacing) * 40);
+  }
+  .h-50 {
+    height: calc(var(--spacing) * 50);
+  }
+  .h-60 {
+    height: calc(var(--spacing) * 60);
+  }
+  .h-80 {
+    height: calc(var(--spacing) * 80);
+  }
+  .h-auto {
+    height: auto;
+  }
+  .h-full {
+    height: 100%;
+  }
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
@@ -292,6 +323,9 @@
   }
   .w-95 {
     width: calc(var(--spacing) * 95);
+  }
+  .w-100 {
+    width: calc(var(--spacing) * 100);
   }
   .w-fit {
     width: fit-content;
@@ -325,6 +359,9 @@
   }
   .flex-col {
     flex-direction: column;
+  }
+  .justify-around {
+    justify-content: space-around;
   }
   .justify-between {
     justify-content: space-between;
@@ -442,6 +479,9 @@
   .bg-slate-900 {
     background-color: var(--color-slate-900);
   }
+  .bg-slate-950 {
+    background-color: var(--color-slate-950);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -493,9 +533,23 @@
   .text-right {
     text-align: right;
   }
+  .font-\[\'Freckle_Face\'\] {
+    font-family: 'Freckle Face';
+  }
+  .font-\[\'Ubuntu\'\] {
+    font-family: 'Ubuntu';
+  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+  .text-4xl {
+    font-size: var(--text-4xl);
+    line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
   .text-8xl {
     font-size: var(--text-8xl);
