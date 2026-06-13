@@ -4,13 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/src/output.css">
+    <!-- <link rel="stylesheet" type="text/css" href="https://jsdelivr.net"> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/phosphor-icons@1.4.2/src/css/icons.min.css">
 </head>
 <body>
-    <input id="input" type="text" placeholder="type Something">
-    <p id="output"></p>
+    <!-- Wrapper -->
+    <div class="min-h-full">
+        <img id="preview" class="bg-slate-300 w-full h-70">
+        <label for="upload" class="absolute top-0 z-10 right-0 m-2 group">
+            <div class="bg-slate-800/50 grid place-content-center size-12 p-2 rounded-full group-hover:bg-slate-900 cursor-pointer transition duration-200 ">
+                <i class="ph ph-pencil-simple text-white text-2xl  "></i>
+            </div>
+        </label>
+        <div class="h-0.5 bg-slate-900/55"></div>
+
+        <input type="file" accept="image/" class="hidden" id="upload">
+    </div>
 
     <script>
-        
+        const preview = document.getElementById('preview');
+        const upload = document.getElementById('upload');
+
+        upload.addEventListener('change', (e) => {
+
+            const file = e.target.files[0];
+            const imageURL = URL.createObjectURL(file);
+            preview.src = imageURL;
+            preview.classList.add(
+                'block',
+                'w-full',
+                'object-cover',
+            )
+
+            preview.addEventListener('load', () => {
+                URL.revokeObjectURL(file);
+            });
+        });
     </script>
 </body>
 </html>
