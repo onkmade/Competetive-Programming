@@ -15,10 +15,19 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
     />
+
+    <style>
+        header:hover #edit-name,
+        header:hover #upload-control,
+        header:hover #profile-control {
+            display: grid;
+            opacity: 1;
+        }
+    </style>
 </head>
-<body class="bg-[#060606] text-[#f7f5f1]">
+<body class="bg-[#121112] text-[#f7f5f1]">
     <div>
-        <header class="relative bg-[#1A1A1A] border border-white/10 m-1 p-1 rounded-md">
+        <header class="relative bg-black border border-white/10 m-1 p-1 rounded-md">
             <!-- Image Preview -->
             <div class=" relative w-full">
                 <div id="preview" class="w-full h-70 rounded-sm bg-black/90 transition-colors bg-cover bg-center bg-no-repeat">
@@ -26,18 +35,18 @@
 
             <!-- name + Icons -->
             <nav class="absolute top-0 left-0 w-full flex items-center space-x-2 justify-between p-2">
-                <div class="flex space-x-2 items-center group transition duration-300">
-                    <p id="banner-name" class="font-thin">Enter Banner Name</p>
+                <div class="flex space-x-1 items-center group transition duration-300">
+                    <p id="banner-name" class="font-thin bg-black/30 px-2 py-1 focus-within:border-black/50 rounded-sm">Enter Banner Name</p>
                     <button id="edit-name" class="place-content-center border border-white/20 text-white/50 p-2 rounded-sm size-8 cursor-pointer transition duration-200 group bg-black/30 opacity-0 hidden group-hover:grid group-hover:opacity-100">
                         <i class="ph ph-pencil-simple-line group-hover:text-white/80 group-hover:border-white/80"></i>
                     </button>
                 </div>
                 <div class="flex space-x-2">
-                    <label for="upload-btn" class="grid place-content-center border border-white/20 text-white/50 p-2 rounded-sm size-8 cursor-pointer transition duration-200 group bg-black/30">
+                    <label for="upload-btn" id="upload-control" class="hidden place-content-center border border-white/20 text-white/50 p-2 rounded-sm size-8 cursor-pointer transition duration-200 group bg-black/30">
                         <input type="file" accept="image/*" id="upload-btn" class="hidden">
                         <i class="ph ph-pencil-simple group-hover:text-white/80 group-hover:border-white/80 "></i>
                     </label>
-                    <label for="profile-btn" class="grid place-content-center border border-white/20 text-white/50 p-2 rounded-sm size-8 cursor-pointer transition duration-200 group bg-black/30">
+                    <label for="profile-btn" id="profile-control" class="hidden place-content-center border border-white/20 text-white/50 p-2 rounded-sm size-8 cursor-pointer transition duration-200 group bg-black/30">
                         <i class="ph ph-user group-hover:text-white/80 group-hover:border-white/80 "></i>
                     </label>
                 </div>
@@ -91,6 +100,10 @@
             btn.addEventListener('click', () => {
                 element.contentEditable = true;
                 element.focus();
+
+                element.classList.add(
+
+                )
 
                 const range = document.createRange();
                 const textSelection = document.getSelection();
