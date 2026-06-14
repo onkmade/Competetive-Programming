@@ -52,14 +52,30 @@
                 </div>
             </nav>
         </header>
-        <main>
 
+        <!-- ==================================================== -->
+        <!--                         MAIN                         -->
+        <!-- ==================================================== -->
+        <main class="p-2">
+            <!-- Buttons -->
+            <div class="space-x-2">
+                <button id="btn" class="btn-primary">Add Task</button>
+                <button id="btn" class="btn-primary">Completed</button>
+            </div>
+
+            <li class="h-[1.5px] bg-white/10 w-full mt-2 mb-2"></li>
+
+            <!-- task Area -->
+            <div>
+
+            </div>
         </main>
         <footer>
 
         </footer>
     </div>
 
+    <script src="/ownUtilityClasses.js"></script>
     <script>
         const preview = document.getElementById('preview');
         const uploadBtn = document.getElementById('upload-btn');
@@ -101,10 +117,6 @@
                 element.contentEditable = true;
                 element.focus();
 
-                element.classList.add(
-
-                )
-
                 const range = document.createRange();
                 const textSelection = document.getSelection();
 
@@ -130,6 +142,8 @@
         };
 
         changeName('banner-name', 'edit-name');
+
+        
         
     </script>
 </body>

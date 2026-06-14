@@ -3,25 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Todo-card</title>
 </head>
 <body>
-    <p>Hello <b>beautiful, pretty</b> <i>world</i> of text!</p>
-    <!--     ↑start          ↑end -->
-    <!-- The selection spans THREE text nodes and TWO elements! -->
-
-    <script>
-        const range = document.createRange();
-
-        const paragraph = document.querySelector('body');
-        const boldElement = document.querySelector('b');
-
-        range.selectNodeContents(boldElement);
-        range.collapse = true;
-
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-    </script>
+    
 </body>
 </html>
