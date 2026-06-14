@@ -4,42 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/src/output.css">
 </head>
-<body class="mx-auto px-4 py-4">
-    <label for="upload">upload image</label><br>
-    <input type="file" name="" id="upload"><br>
-
-    <img id="preview" class="border border-dashed border-slate-800 size-50 rounded-sm">
+<body>
+    <p>Hello <b>beautiful</b> <i>world</i> of text!</p>
+    <!--     ↑start          ↑end -->
+    <!-- The selection spans THREE text nodes and TWO elements! -->
 
     <script>
-        const upload = document.getElementById('upload');
-        const preview = document.getElementById('preview');
-
-        const savedString = localStorage.getItem('user-upload');
-        /* 
-        okay, so by calling the `getItem()` instance method that pulls out the data from the hard drive (retrieve) and hands it over to the JS Engine!!
-        */ 
-
-        if(savedString){
-            preview.src = savedString;
-        }
-
-        upload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-
-            reader.addEventListener('load', (e) => {
-                const base64String = e.target.result;
-                preview.src = base64String;
-
-
-                localStorage.setItem('user-upload', base64String);
-                /*  */
-            });
-
-            reader.readAsDataURL(file);
-        });
+        const range = document.createRange();
+        console.dir(range);
     </script>
 </body>
 </html>
