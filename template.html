@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Template + State</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<base target="_blank">
+</head>
+<body class="bg-gray-900 min-h-screen p-8">
+
+    <!-- Add Task Input -->
+    <div class="max-w-md mx-auto mb-6">
+        <div class="flex gap-2">
+            <input 
+                type="text" 
+                id="task-input" 
+                placeholder="What needs to be done?"
+                class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500"
+            >
+            <button 
+                id="add-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+                Add
+            </button>
+        </div>
+    </div>
+
+    <!-- Todo Container -->
+    <div id="todo-container" class="max-w-md mx-auto space-y-3"></div>
+
+    <!-- Template: Invisible until cloned -->
+    <template id="todo-template">
+        <div class="todo-card bg-[#121212] rounded-lg p-4 space-y-3" data-id="">
+            <!-- Header: Title + Buttons -->
+            <div class="flex justify-between items-center">
+                <p class="todo-title text-white font-medium flex-1" contenteditable="false">Task Title</p>
+                <div class="flex gap-1">
+                    <button class="edit-btn bg-[#1a1a1a] text-white px-3 py-1 rounded text-sm border border-white/10 hover:bg-[#2a2a2a] transition-colors">
+                        Edit
+                    </button>
+                    <button class="delete-btn bg-[#1a1a1a] text-red-400 px-3 py-1 rounded text-sm border border-white/10 hover:bg-red-900/30 transition-colors">
+                        Del
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main: Description Input -->
+            <div class="bg-[#1a1a1a] rounded p-3">
+                <input 
+                    type="text" 
+                    class="todo-desc w-full bg-transparent text-gray-300 text-sm placeholder-gray-500 focus:outline-none"
+                    placeholder="Add description..."
+                >
+            </div>
+
+            <!-- Footer: Status + Date -->
+            <div class="flex justify-between items-center">
+                <span class="todo-date text-gray-500 text-xs"></span>
+                <button class="status-btn bg-[#1a1a1a] text-yellow-400 px-3 py-1 rounded text-xs border border-white/10 hover:bg-yellow-900/20 transition-colors">
+                    Pending
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // STATE: The single source of truth
+        // ═══════════════════════════════════════════════════════════
+        let todos = [];
+        let nextId = 1;
+
+        // ═══════════════════════════════════════════════════════════
+        // DOM REFERENCES
+        // ═══════════════════════════════════════════════════════════
+        const container = document.getElementById('todo-container');
+        const template = document.getElementById('todo-template');
+        const input = document.getElementById('task-input');
+        const addBtn = document.getElementById('add-btn');
+
+        // ═══════════════════════════════════════════════════════════
+        // RENDER: State → DOM (the only place DOM changes happen)
+        // ═══════════════════════════════════════════════════════════
+        function render() {
+            container.innerHTML = '';
+
+            todos.forEach(todo => {
+                // Clone template
+                const clone = template.content.cloneNode(true);
+                const card = clone.querySelector('.todo-card');
+
+                // Fill data
+                card.dataset.id = todo.id;
+                card.querySelector('.todo-title').textContent = todo.title;
+                card.querySelector('.todo-desc').value = todo.description;
+                card.querySelector('.todo-date').textContent = todo.date;
+
+                // Status styling
+                const statusBtn = card.querySelector('.status-btn');
+                statusBtn.textContent = todo.completed ? 'Done' : 'Pending';
+                statusBtn.className = `status-btn px-3 py-1 rounded text-xs border border-white/10 transition-colors ${
+                    todo.completed 
+                        ? 'bg-green-900/20 text-green-400 hover:bg-green-900/30' 
+                        : 'bg-[#1a1a1a] text-yellow-400 hover:bg-yellow-900/20'
+                }`;
+
+                // If completed, dim the card
+                if (todo.completed) {
+                    card.classList.add('opacity-60');
+                }
+
+                container.appendChild(clone);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // ACTIONS: Modify state, then render
+        // ═══════════════════════════════════════════════════════════
+        function addTodo(title) {
+            todos.push({
+                id: nextId++,
+                title: title,
+                description: '',
+                completed: false,
+                date: new Date().toLocaleDateString()
+            });
+            render();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            render();
+        }
+
+        function toggleComplete(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                render();
+            }
+        }
+
+        function updateTitle(id, newTitle) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.title = newTitle;
+                // No render needed — user is actively editing, 
+                // we update state silently
+            }
+        }
+
+        function updateDescription(id, newDesc) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.description = newDesc;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // EVENT DELEGATION: One listener for all card interactions
+        // ═══════════════════════════════════════════════════════════
+        container.addEventListener('click', (event) => {
+            const card = event.target.closest('.todo-card');
+            if (!card) return;
+
+            const id = parseInt(card.dataset.id);
+
+            // Delete button
+            if (event.target.closest('.delete-btn')) {
+                deleteTodo(id);
+                return;
+            }
+
+            // Status toggle
+            if (event.target.closest('.status-btn')) {
+                toggleComplete(id);
+                return;
+            }
+
+            // Edit button
+            if (event.target.closest('.edit-btn')) {
+                const titleEl = card.querySelector('.todo-title');
+                const isEditing = titleEl.contentEditable === 'true';
+
+                if (isEditing) {
+                    // Save: update state from DOM, then lock
+                    updateTitle(id, titleEl.textContent);
+                    titleEl.contentEditable = 'false';
+                    titleEl.classList.remove('bg-gray-800', 'px-2', 'rounded', 'outline-none');
+                    event.target.textContent = 'Edit';
+                } else {
+                    // Edit: unlock
+                    titleEl.contentEditable = 'true';
+                    titleEl.classList.add('bg-gray-800', 'px-2', 'rounded', 'outline-none');
+                    titleEl.focus();
+
+                    // Place cursor at end
+                    const range = document.createRange();
+                    range.selectNodeContents(titleEl);
+                    range.collapse(false);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+
+                    event.target.textContent = 'Save';
+                }
+            }
+        });
+
+        // Description input: update state on input (no re-render)
+        container.addEventListener('input', (event) => {
+            if (event.target.classList.contains('todo-desc')) {
+                const card = event.target.closest('.todo-card');
+                const id = parseInt(card.dataset.id);
+                updateDescription(id, event.target.value);
+            }
+        });
+
+        // Add new todo
+        addBtn.addEventListener('click', () => {
+            const title = input.value.trim();
+            if (!title) return;
+            addTodo(title);
+            input.value = '';
+            input.focus();
+        });
+
+        input.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                addBtn.click();
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIAL RENDER
+        // ═══════════════════════════════════════════════════════════
+        render();
+    </script>
+</body>
+</html>
