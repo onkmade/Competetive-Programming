@@ -6,13 +6,22 @@
     <title>Document</title>
 </head>
 <body>
-    <p>Hello <b>beautiful</b> <i>world</i> of text!</p>
+    <p>Hello <b>beautiful, pretty</b> <i>world</i> of text!</p>
     <!--     ↑start          ↑end -->
     <!-- The selection spans THREE text nodes and TWO elements! -->
 
     <script>
         const range = document.createRange();
-        console.dir(range);
+
+        const paragraph = document.querySelector('body');
+        const boldElement = document.querySelector('b');
+
+        range.selectNodeContents(boldElement);
+        range.collapse = true;
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
     </script>
 </body>
 </html>
