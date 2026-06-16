@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practices</title>
+    <link rel="stylesheet" href="/src/output.css">
+    <style>
+        /* How to target an custom data attribute in CSS 
+
+        To target an attribute in CSS (or inside your JavaScript querySelector), 
+        you wrap the attribute name and value inside square brackets [ ]
+
+        1. Find any element with that attribute: [data-action]
+        2. Find elements with a specific attribute value: [data-action="delete"]
+
+        For example:
+
+        [data-action] - target all the element 
+        button[data-action] - target all the button who has data-action as the attribute
+        [data-action = "value"] - target elements with specific value
+        element[data-action = "value"] - target only element which has specific value assigned
+        .class > button[data-action] - CSS syntax to help you!
+        
+        */
+        .toolbar > button[data-action = "delete"]{
+            background-color: brown;
+            padding: 0.5rem;
+            color: white;
+            border-radius: 0.35rem;
+            width: fit-content;
+        }
+    </style>
+</head>
+<body class="p-4 space-y-2">
+    <section class="toolbar">
+        <button data-action="save">Save</button>
+        <button data-action="delete">Delete</button>
+        <button data-action="delete">Trash</button>
+        <button data-action="edit">Edit</button>
+    </section>
+
+    <!-- 
+    Unlike classes and Ids, data-[name] = "value" are the custom attribute!
+    
+    In the above example: 
+    class: standard attribute
+    data-action: Custom attribute created by the user
+    
+    -->
+    <button data-action="delete">Google</button>
+    <div data-action="delete">Div Element</div>
+</body>
+</html>
