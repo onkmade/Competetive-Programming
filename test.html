@@ -3,128 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo-card</title>
+    <title>Practices</title>
     <link rel="stylesheet" href="/src/output.css">
+    <style>
+        button[data-action = "delete"]{
+            background-color: brown;
+            padding: 0.5rem;
+            color: white;
+            border-radius: 0.35rem;
+            width: fit-content;
+        }
+    </style>
 </head>
-<body class="p-4">
-    <button id="add-task" class="btn-primary">Add</button>
-    <div id="container" class="w-80 mt-2 space-y-2"></div>
-    <script src="ownUtilityClasses.js"></script>
-
-    <script>
-        const elementCreate = (element, UpdateText, elementType, style) => {
-            const newEl = document.createElement(element);
-            
-            if(element === 'button'){
-                newEl.textContent = UpdateText;
-                newEl.classList.add(
-                    'bg-[#1a1a1a]',
-                    'p-2',
-                    'rounded-sm',
-                    'px-3',
-                    'py-1.5',
-                    'text-white',
-                    'border',
-                    'border-white/10',
-                    'cursor-pointer'
-                );
-            }
-
-            if(element === 'div'){
-                if(elementType === 'main-container'){
-                    newEl.classList.add(
-                        'bg-[#121212]',
-                        'w-full',
-                        'p-2',
-                        'rounded-md'
-                    );
-                }
-
-                if(elementType === 'header' || elementType === 'footer'){
-                    newEl.classList.add(
-                        'bg-none'
-                    )
-                }
-            }
-
-            if(element === 'p'){
-                newEl.textContent = UpdateText;
-                newEl.classList.add(
-                    'p-1',
-                    'text-white'
-                );
-            }
-
-            if(style === 'flexBetween'){
-                newEl.classList.add(
-                    'flex',
-                    'justify-between',
-                    'items-center'
-                );
-            }
-
-            return newEl;
-        }
-
-
-        function card(btn, container){
-            const addBtn = document.getElementById(btn);
-            const targetContainer = document.getElementById(container);
-            
-            addBtn.addEventListener('click', () => {
-                const header = elementCreate('div', 'header','header' , 'flexBetween');
-                const sectionHeader = elementCreate('div')
-                const main = elementCreate('div');
-                const footer = elementCreate('div');
-                
-                // Header
-                const headerText = elementCreate('p', 'BannerCard');
-                const editBtn = elementCreate('button', 'Edit');
-                const delBtn = elementCreate('button', 'Del')
-                sectionHeader.append(editBtn, delBtn);
-                sectionHeader.classList.add('space-x-1');
-                header.append(headerText, sectionHeader);
-                header.classList.add(
-                    'space-x-1',
-                    'flex',
-                );
-
-
-                // main
-                const heading = elementCreate('p', 'AnimeSong', 'header');
-                heading.classList.add('text-xl');
-                const subHeading = elementCreate('p', 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rerum, velit.', 'header');
-                subHeading.classList.add('opacity-40');
-                const sectionMain = elementCreate('div');
-
-                sectionMain.append(heading, subHeading);
-                sectionMain.classList.add(
-                    'bg-[#1a1a1a]',
-                    'p-2',
-                    'rounded-sm'
-                )
-                main.appendChild(sectionMain);
-
-
-                // footer
-                const date = elementCreate('p', new Date().toLocaleDateString(), 'header');
-                const status = elementCreate('button', 'completed');
-                const sectionFooter = elementCreate('div', 'header', 'header', 'flexBetween');
-                sectionFooter.append(date, status);
-
-                footer.appendChild(sectionFooter);
-
-                const cardWrapper = elementCreate('div', null, 'main-container');
-                cardWrapper.classList.add(
-                    'space-y-2',
-                )
-                cardWrapper.append(header, main, footer);
-                targetContainer.appendChild(cardWrapper);
-            });
-        }
-
-        card('add-task', 'container');
-
-    </script>
+<body class="p-4 space-y-2">
+    <section class="toolbar">
+        <button data-action="save">Save</button>
+        <button data-action="delete">Delete</button>
+        <button data-action="delete">Trash</button>
+        <button data-action="edit">Edit</button>
+    </section>
+    <button data-action="delete">Google</button>
+    <div data-action="delete">Div Element</div>
 </body>
 </html>
