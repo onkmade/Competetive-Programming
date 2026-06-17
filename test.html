@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="m-4 space-y-2">
+    <form action="/" id="text-form">
+        <label for="text-input">Enter Anything:</label>
+        <input class="border border-slate-500 p-1 rounded-sm" type="text" name="text-input" id="text-input">
+        <br>
+        <label for="file-input">Enter Image File:</label>
+        <input class="border border-slate-500 p-1 rounded-sm" type="file" name="file-img" id="file-img">
+    </form>
+
+
+    <script>
+        const textorm = document.querySelector('text-form');
+        const inputs = document.querySelectorAll('input');
+
+        console.log(inputs);
+    </script>
+</body>
+</html>
