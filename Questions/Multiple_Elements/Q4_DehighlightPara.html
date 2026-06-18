@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De-Highlight and Hightlight Para</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body>
+    <article class="bg-blue-400 w-150 p-2 m-2 rounded-sm space-y-1">
+        <p class="bg-white/50 p-2 rounded-sm">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint nostrum voluptatem culpa!
+        </p>
+        <p class="bg-white/50 p-2 rounded-sm">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam voluptatem odio harum soluta pariatur voluptates iure delectus cumque, tenetur voluptas, architecto enim expedita ullam alias cum! Similique labore eum facilis.
+        </p>
+        <p class="bg-white/50 p-2 rounded-sm">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusamus, hic?
+        </p>
+    </article>
+
+
+    <script>
+        const article = document.querySelectorAll('article > p');
+        article.forEach( para => {
+            para.addEventListener('mouseenter', () => {
+                article.forEach( other => {
+                    other.classList.add('bg-white/50', 'text-black');
+                });
+
+                para.classList.remove('bg-white/50', 'text-black');
+                para.classList.add('bg-blue-600', 'text-white');
+            });
+        });
+        
+    </script>
+</body>
+</html>

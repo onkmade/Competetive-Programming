@@ -36,7 +36,7 @@ Disable all buttons except the one that was just clicked.
         const list = document.querySelector('.toolbar');
 
         list.addEventListener('click', (e) => {
-            const clickedBtn = e.target.closest('button');
+            const clickedBtn = e.target;
 
             if(!clickedBtn) return;
             
