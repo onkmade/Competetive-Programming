@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/src/output.css"> 
+    <style>
+        button{
+            background-color: steelblue;
+            padding: 0.5rem;
+            width: fit-content;
+            border-radius: 0.35rem;
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-4 space-y-2">
+    <form action="" class="checkboxes">
+        <input type="checkbox" name="" id="anime">
+        <label for="anime">Do you like anime</label>
+        <br>
+        <input type="checkbox" name="" id="movies">
+        <label for="movies">Do you watch movies</label>
+        <br>
+        <input type="checkbox" name="" id="shows">
+        <label for="shows">Do you watch Shows</label>
+        <br>
+        <label for="cartoon">
+            <input type="checkbox" id="cartoon">
+            Do you watch Cartoon
+        </label>
+    </form>
+
+    <div>Checked: <span id="selected">0</span>, Total: <span id="total-check">0</span></div>
+
+
+    <script>
+        const checkboxes = document.querySelector('.checkboxes');
+        const counter = document.querySelector('#selected');
+        const totalCheck = document.querySelector('#total-check');
+        totalCheck.textContent = checkboxes.querySelectorAll('input[type = "checkbox"]').length;
+
+        checkboxes.addEventListener('change', (e) => {
+            counter.textContent = checkboxes.querySelectorAll('input[type = "checkbox"]:checked').length;
+        });
+
+    </script>
+</body>
+</html>
