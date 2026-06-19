@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Inputs</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="text-black/80">
+    <!-- Form  -->
+    <form action="" class="p-4 w-100 flex flex-col gap-2">
+        <label for="title" data-label="Title" class="bg-black/10 py-2 px-4 rounded-sm select-none">
+            <input type="text" name="title" id="title" placeholder="Add Title Name" class="outline-none border-none w-full">
+        </label>
+        <p class="error-Message"></p>
+        
+        <label for="name" data-label="Name" class="bg-black/10 py-2 px-4 rounded-sm select-none">
+            <input type="text" name="name" id="name" placeholder="Add Name" class="outline-none border-none w-full">
+        </label>
+        <p class="error-Message"></p>
+    </form>
+
+    <script>
+        const form = document.querySelector('form');
+
+        // CLEAR error on focus
+        form.addEventListener('focusin', (e) => {
+            const label = e.target.closest('label');
+            if (!label) return;
+
+            const errorMsg = label.nextElementSibling;
+            errorMsg.classList.remove('text-red-400', 'px-2', 'text-[14px]');
+            errorMsg.textContent = '';
+        });
+
+        // SHOW error on blur (if invalid)
+        form.addEventListener('focusout', (e) => {
+            const label = e.target.closest('label');
+            if (!label) return;
+
+            const input = label.querySelector('input');
+            const errorMsg = label.nextElementSibling;
+
+            if (input.value.trim() === '') {
+                errorMsg.classList.add('text-red-400', 'px-2', 'text-[14px]');
+                errorMsg.textContent = `Please enter your ${label.dataset.label}`;
+            }
+        });
+    </script>
+</body>
+</html>
