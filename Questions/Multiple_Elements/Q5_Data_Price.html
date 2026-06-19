@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Price</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="m-4 space-y-2">
+    <article id="list" class="container list-none space-y-2">
+        <li data-price="2000">Esmo <span class="bg-black/10 p-0.5 rounded-sm">2000</span></li>
+        <li data-price="1800">Ne zha <span class="bg-black/10 p-0.5 rounded-sm">1800</span></li>
+        <li data-price="3600">Baka <span class="bg-black/10 p-0.5 rounded-sm">3600</span></li>
+        <li data-price="600">Ao Bing <span class="bg-black/10 p-0.5 rounded-sm">600</span></li>
+    </article>
+    <button class="btn bg-blue-400 p-2 w-fit rounded-sm text-white cursor-pointer">
+        Sort
+    </button>
+
+    <script>
+        const sortBtn = document.querySelector('.btn');
+        const container = document.querySelector('.container');
+
+        sortBtn.addEventListener('click', () => {
+            const list = document.querySelector('#list');
+
+            const itemArray = Array.from(list.children);
+
+            itemArray.sort( (a, b) => {
+                const el1 = a.dataset.price;
+                const el2 = b.dataset.price;
+
+                return el1 - el2;
+            });
+
+
+            itemArray.forEach(item => container.appendChild(item));
+        });
+    </script>
+</body>
+</html>
