@@ -5,10 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Preview</title>
     <link rel="stylesheet" href="/src/output.css">
+    <style>
+        .image-grid{
+            figure > img:hover{
+                transition: all 0.275s ease-in-out;
+                transform: scale(1.05);
+                box-shadow: 0px 4px 3px -1px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+            }
+        }
+    </style>
 </head>
-<body>
-    <main>
-        
+<body class="p-2 mx-auto grid md:grid-cols-2 sm:grid-cols-1 min-h-screen gap-2">
+
+    <div class="image-grid space-y-2 bg-slate-300 p-2 rounded-md">
+
+        <div class="w-full text-right ml-auto py-2">
+            <label class="add-image bg-slate-600 p-2 rounded-sm text-white cursor-pointer">
+                <input type="file" class="hidden">
+                Add Image
+            </label>
+        </div>
+
+        <figure class="grid grid-cols-2 md:grid-cols-3 gap-2">
+            <img src="https://i.pinimg.com/736x/9c/b1/a7/9cb1a79fa6065571f6d9b14f840e116f.jpg" alt="" class="w-full h-60 object-cover block max-w-full rounded-sm">
+            <img src="https://i.pinimg.com/736x/38/fb/5c/38fb5cf1feabdad8065ddec0bd3d44a4.jpg" alt="" class="w-full h-60 object-cover block max-w-full rounded-sm">
+            <img src="https://i.pinimg.com/1200x/64/ae/1a/64ae1a0b18e5734bf9900d0888ec2c81.jpg" alt="" class="w-full h-60 object-cover block max-w-full rounded-sm">
+            <img src="https://i.pinimg.com/736x/50/31/8c/50318c2f827e4933086c27a14c950779.jpg" alt="" class="w-full h-60 object-cover block max-w-full rounded-sm">
+            <img src="https://i.pinimg.com/1200x/6c/d7/8b/6cd78b24b777fc070353cdf34e4bd956.jpg" alt="" class="w-full h-60 object-cover block max-w-full rounded-sm">
+        </figure>
+    </div>
+
+    <main class="bg-slate-300 p-2 rounded-md size-120">
+        <figure class="image-preview bg-white grid place-content-center h-full rounded-md border-2 border-slate-700 border-dashed overflow-hidden">
+            <p class="text-slate-600 text-3xl opacity-50">Image Preview Here</p>
+            <img src="" alt="" class="hidden">
+        </figure>
     </main>
+
+    <script>
+        const imagePreview = document.querySelector('.image-preview');
+        const imageGrid = document.querySelector('.image-grid figure');
+        const addImageBtn = document.querySelector('.add-image');
+
+        addImageBtn.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+
+            const reader = new FileReader();
+            const savedImage = localStorage.getItem('savedImage');
+
+            reader.addEventListener('load', (e) => {
+                const base64String = e.target.result;
+
+                const imgElement = document.createElement('img');
+                imgElement.src = base64String;
+                imgElement.className = `w-full h-60 object-cover block max-w-full rounded-sm`;
+
+                imageGrid.appendChild(imgElement);
+
+            });
+
+            reader.readAsDataURL(file);
+            console.log('File Value: ', file);
+        });
+
+        imageGrid.addEventListener('click', (e) => {
+            const img = e.target.closest('img');
+            const src = img.src;
+
+            previewImage(src);
+        });
+
+
+        const previewImage = (src) => {
+            const pElement = imagePreview.firstElementChild;
+            pElement.classList.add('hidden');
+
+            const imgElement = imagePreview.lastElementChild;
+            imgElement.src = src;
+            imgElement.className = `block overflow-hidden h-auto w-full object-cover`;
+
+
+            imagePreview.appendChild(imgElement);
+        }
+    </script>
 </body>
 </html>
