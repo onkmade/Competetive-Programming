@@ -46,48 +46,39 @@
     <script>
         const imagePreview = document.querySelector('.image-preview');
         const imageGrid = document.querySelector('.image-grid figure');
-        const addImageBtn = document.querySelector('.add-image');
+        const addImageBtn = document.querySelector('.add-image input'); // target the input, not label
 
+        // File upload — add new image to grid
         addImageBtn.addEventListener('change', (e) => {
             const file = e.target.files[0];
+            if (!file) return;
 
             const reader = new FileReader();
-            const savedImage = localStorage.getItem('savedImage');
-
             reader.addEventListener('load', (e) => {
-                const base64String = e.target.result;
-
                 const imgElement = document.createElement('img');
-                imgElement.src = base64String;
-                imgElement.className = `w-full h-60 object-cover block max-w-full rounded-sm`;
-
+                imgElement.src = e.target.result;
+                imgElement.className = 'w-full h-60 object-cover block max-w-full rounded-sm';
                 imageGrid.appendChild(imgElement);
-
             });
-
             reader.readAsDataURL(file);
-            console.log('File Value: ', file);
+
+            // Reset input so same file can be selected again
+            e.target.value = '';
         });
 
+        // Click image → show in preview
         imageGrid.addEventListener('click', (e) => {
             const img = e.target.closest('img');
-            const src = img.src;
+            if (!img) return; // guard: clicked between images
 
-            previewImage(src);
-        });
+            const pElement = imagePreview.querySelector('p');
+            const imgElement = imagePreview.querySelector('img');
 
-
-        const previewImage = (src) => {
-            const pElement = imagePreview.firstElementChild;
             pElement.classList.add('hidden');
-
-            const imgElement = imagePreview.lastElementChild;
-            imgElement.src = src;
-            imgElement.className = `block overflow-hidden h-auto w-full object-cover`;
-
-
-            imagePreview.appendChild(imgElement);
-        }
+            imgElement.src = img.src;
+            imgElement.classList.remove('hidden');
+            imgElement.className = 'block h-full w-full object-cover object-center';
+        });
     </script>
 </body>
 </html>
