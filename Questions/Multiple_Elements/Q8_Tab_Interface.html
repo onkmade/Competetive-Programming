@@ -20,7 +20,7 @@
         </section>
         
         <header>
-            <nav class="nav-btn flex justify-between bg-white p-0.5 rounded-sm text-center gap-1">
+            <nav class="nav-btn flex flex-wrap justify-between bg-white p-0.5 rounded-sm text-center gap-1">
                 <button data-btn="home" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">HOME</button>
                 <button data-btn="undone" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">UNDONE</button>
                 <button data-btn="done" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">DONE</button>
@@ -28,7 +28,7 @@
         </header>
         <main class="tab-section bg-[#ffffff] p-2 rounded-sm h-60">
             <Section data-id="home" class="block">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, natus?</Section>
-            <Section data-id="undone" class="hidden">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, dolorem, perspiciatis quod aliquam consectetur vero at, veritatis obcaecati sit explicabo hic. Voluptatem adipisci iusto ea, dolorem optio atque nostrum vel?</Section>
+            <Section data-id="undone" class="hidden">Lorem ipsum dolor sit amet consectetur adipisicing elit?</Section>
             <Section data-id="done" class="hidden">Lorem ipsum dolor sit.</Section>
         </main>
     </div>
@@ -37,9 +37,50 @@
         /* 
         `querySelectorAll` returns a static NodeList — a snapshot at the moment of selection. 
         New elements added afterward are not included, which causes the wrong behavior when dynamically adding tabs.
+
+        Instead, The key: document.querySelectorAll('[data-id]') runs every time you click, not just once at page load. So new sections are always found.
         */
 
-        
+        const addSection = document.querySelector('#add-section');
+        const navBtns = document.querySelector('.nav-btn');
+        const sections = document.querySelector('.tab-section');
+
+        navBtns.addEventListener('click', (event) => {
+            const clickedBtn = event.target.closest('button');
+            const btn = clickedBtn.dataset.btn;
+
+            // Re-query here — gets ALL current sections including newly added ones
+            const allTabs = sections.querySelectorAll('[data-id]');
+            
+            allTabs.forEach( tab => {
+                btn === tab.dataset.id ? tab.classList.remove('hidden') : tab.classList.add('hidden');
+            });
+        });
+
+        addSection.addEventListener('click', (e) => {
+            const name = document.querySelector('#text');
+            const description = document.querySelector('#description');
+
+            const nameInput = name.value;
+            const descriptionInput = description.value;
+
+            const btn = document.createElement('button');
+            btn.setAttribute("data-btn", nameInput);
+            btn.textContent = nameInput;
+            btn.className = `bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer`;
+            navBtns.appendChild(btn);
+
+            const section = document.createElement('section');
+            section.textContent = descriptionInput;
+            section.setAttribute("data-id", nameInput);
+            section.className = 'hidden';
+            sections.appendChild(section);
+
+            name.value = '';
+            description.value = '';
+            name.focus();
+            description.focus();
+        });
     </script>
 </body>
 </html>
