@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="relative h-screen min-w-full">
+    <canvas id="paint-area" width="100vw" height="100vh"></canvas>
+    <header class="absolute inset-0 flex justify-center h-fit m-4">
+        <div class="colors bg-[#fdfcf8] flex items-center flex-wrap gap-2 p-2 border border-[#bcbcb672] rounded-sm w-40">
+            <p>Colors: </p>
+            <div data-color="#895ef6" class="color size-5 rounded-sm bg-[#895ef6] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#f03063" class="color size-5 rounded-sm bg-[#f03063] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#7ae3aa" class="color size-5 rounded-sm bg-[#7ae3aa] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#20cbdd" class="color size-5 rounded-sm bg-[#20cbdd] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#ffc63b" class="color size-5 rounded-sm bg-[#ffc63b] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#9fa0a4" class="color size-5 rounded-sm bg-[#9fa0a4] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#009788" class="color size-5 rounded-sm bg-[#009788] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+            <div data-color="#8c734b" class="color size-5 rounded-sm bg-[#8c734b] active:outline-1 active:outline-white cursor-pointer hover:border-white hover:border"></div>
+
+        </div>
+    </header>
+    
+    <script>
+        const canvas= document.querySelector('#paint-area');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        
+        // ctx is your brush
+        
+        let isPainting = false;
+
+        
+        // Choose the color man
+        const colors = document.querySelector('.colors');
+        let   currentColor = '#000000'
+        const chooseColor = () => {
+            
+            colors.addEventListener('click', (event) => {
+                const clickedColor = event.target.closest('.color');
+                currentColor = clickedColor.dataset.color;
+
+                ctx.strokeStyle = currentColor;
+            });
+            
+        }
+
+        chooseColor();
+        
+        canvas.addEventListener('mousedown', (e) => {
+            isPainting = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+            ctx.lineCap = 'round'
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if(!isPainting) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            isPainting = false;
+        });
+        
+    </script>
+</body>
+</html>
