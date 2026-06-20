@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Interface</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="grid place-content-center min-h-svh">
+    <div class="w-200 bg-[#e5e6fa] p-2 rounded-sm space-y-2">
+        
+        <section class="flex w-full gap-1">
+            <label for="text">
+                <input type="text" name="" id="text" class="outline-none border-none bg-white p-1 rounded-sm" placeholder="Enter Tab Name">
+            </label>
+            <label for="description" class="w-full">
+                <input type="description" name="" id="description" class="w-full outline-none border-none bg-white p-1 rounded-sm" placeholder="Enter Description">
+            </label>
+            <button id="add-section" class="bg-[#3f5f43] w-50 text-white p-1 rounded-sm cursor-pointer">Add Section</button>
+        </section>
+        
+        <header>
+            <nav class="nav-btn flex justify-between bg-white p-0.5 rounded-sm text-center gap-1">
+                <button data-btn="home" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">HOME</button>
+                <button data-btn="undone" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">UNDONE</button>
+                <button data-btn="done" class=" bg-[#3f5f43] text-white p-1 rounded-sm flex-1 cursor-pointer">DONE</button>
+            </nav>
+        </header>
+        <main class="tab-section bg-[#ffffff] p-2 rounded-sm h-60">
+            <Section data-id="home" class="block">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, natus?</Section>
+            <Section data-id="undone" class="hidden">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, dolorem, perspiciatis quod aliquam consectetur vero at, veritatis obcaecati sit explicabo hic. Voluptatem adipisci iusto ea, dolorem optio atque nostrum vel?</Section>
+            <Section data-id="done" class="hidden">Lorem ipsum dolor sit.</Section>
+        </main>
+    </div>
+
+    <script>
+        /* 
+        `querySelectorAll` returns a static NodeList — a snapshot at the moment of selection. 
+        New elements added afterward are not included, which causes the wrong behavior when dynamically adding tabs.
+        */
+
+        
+    </script>
+</body>
+</html>
