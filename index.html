@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body>
+    <ul class="container">
+        <li>Keep working hard</li>
+    </ul>
+
+    <script>
+        
+        const todos = ["Buy Milk", "Watch Yourself Grow"];
+        const list = document.querySelector('.container');
+
+        function render(){
+            // Clear the container before appending the element
+            list.innerHTML = '';
+            todos.forEach( todo => {
+                const li = document.createElement('li');
+                li.textContent = todo;
+
+                list.appendChild(li);
+            });
+        }
+
+        function addTask(task){
+            todos.push(task);
+            render();
+        }
+
+        addTask("Cool");
+        addTask("King");
+
+
+    </script>
+</body>
+</html>
