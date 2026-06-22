@@ -1,0 +1,98 @@
+<!-- 
+==========================================
+Given an array of objects representing products (name, price, category),
+render them as cards. Add a filter dropdown by category that shows only matching cards. 
+========================================== 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Array of Objects</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="min-h-full bg-[#fcfcfc] min-w-full p-2 space-y-1.5">
+    <!-- Main -->
+    <main id="list" class="bg-[#e5e6fa] p-2 rounded-sm w-full grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-1">
+   
+    </main>
+    <script>
+        const products = [
+            { 
+                name: "Wireless Mouse", 
+                price: 29.99, 
+                category: "Electronics", 
+                img: "https://i.pinimg.com/1200x/2e/37/a7/2e37a721b6d03a521194ca7d5ab85b93.jpg" 
+            },
+            { 
+                name: "Running Shoes", 
+                price: 85.00, 
+                category: "Apparel", 
+                img: "https://i.pinimg.com/736x/6a/0f/b3/6a0fb34a5bf5b08127faadbc1dea26b5.jpg" 
+            },
+            { 
+                name: "Pressure Cooker", 
+                price: 49.99, 
+                category: "Home Appliances", 
+                img: "https://i.pinimg.com/736x/08/90/91/089091b24d31562fe6dc4a53187fa85d.jpg" 
+            },
+            { 
+                name: "Mechanical Keyboard", 
+                price: 110.00, 
+                category: "Electronics", 
+                img: "https://i.pinimg.com/1200x/b7/88/25/b7882560173e889f23321cb24443acad.jpg" 
+            }
+        ];
+
+        
+        const list = document.querySelector('#list');
+
+        function formElement(tag, textContent){
+            const element = document.createElement(tag);
+            element.textContent = textContent;
+
+            return element;
+        }
+
+        function render(){
+            list.innerHTML = '';
+
+            products.forEach( product => {
+                // article - holder of all content
+                const article = document.createElement('article');
+                article.className = 'bg-white h-fit p-2 rounded-sm grid gap-1'
+
+                // Each Object's data
+                const h1 = formElement('h1', product.name);
+                h1.className = `text-[#202833] text-xl mb-2`
+                h1.dataset.name = product.name;
+
+                const price = formElement('span', `$${product.price}`);
+                price.className = 'text-[#202833] bg-[#20283320] px-2 py-1 rounded-sm w-fit'
+                price.dataset.price = product.price;
+                
+                const category = formElement('small', product.category);
+                category.className = 'bg-[#fea50010] rounded-sm text-[#fea500] p-1'
+                category.dataset.category = product.category;
+
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center';
+                div.append(price, category);
+
+
+                const img = document.createElement('img');
+                img.src = product.img;
+                img.className = `rounded-sm object-cover w-70 h-50`;
+
+
+                article.append(h1, div, img);
+                list.appendChild(article);
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>

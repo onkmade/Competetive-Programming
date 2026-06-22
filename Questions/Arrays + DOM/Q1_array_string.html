@@ -15,6 +15,7 @@
                 <input type="text" id="name" placeholder="Enter Name" class="outline-none border-none bg-white p-2 rounded-sm w-full">
             </label>
             <button id="add-name" class="bg-[#3f5f44] text-white p-2 rounded-sm w-15 cursor-pointer">Add</button>
+            <button id="all-task" class="bg-[#3f5f44] text-white p-2 rounded-sm w-15">0</button>
         </div>
 
         <!-- LIST CONTAINER -->
@@ -27,17 +28,21 @@
         const todos = ["Baka", "Tron", "Flynn"];
         const list = document.querySelector('.list');
         const addName = document.querySelector('#add-name');
+        const allTask = document.getElementsByClassName('task-list');
+        const taskCounter = document.querySelector('#all-task')
         
         // Clear all and re-render everything approach
         function render(){
             // Clear the container
             list.innerHTML = "";
-
+            
+            // Re-render the array (everything)
             todos.forEach( (todo, index) => {
+                taskCounter.textContent = allTask.length + 1;
 
                 const span = document.createElement('span');
                 span.textContent = `${index + 1}. ${todo}`;
-                span.className = 'bg-white text-[#3f5f44] w-full flex justify-between items-center p-2 rounded-sm'
+                span.className = 'task-list bg-white text-[#3f5f44] w-full flex justify-between items-center p-2 rounded-sm'
 
                 const del = document.createElement('button');
                 del.textContent = "Del";
@@ -47,6 +52,15 @@
                 span.appendChild(del);
                 list.appendChild(span);
 
+                
+                // DYNAMIC ELEMENT: Delete buttons
+                // - Created inside render(), destroyed by innerHTML = ''
+                // - Re-created on every re-render with fresh data
+                // - Event listener attached fresh each time
+                // - Think: "This element is part of the data, it comes and goes"
+                // - The closure (index) is captured at creation time, so each button
+                //   knows exactly which array item it controls
+                
                 del.addEventListener('click', () => {
                     todos.splice(index, 1);
                     render();
@@ -55,7 +69,12 @@
                 
             });
         }
-
+        
+        // STATIC ELEMENT: Add button
+        // - Lives in the HTML, never destroyed by render()
+        // - Selected once at page load
+        // - Event listener attached once, survives forever
+        // - Think: "This element is part of the page skeleton, not the data"
         addName.addEventListener('click', () => {
             const input = document.querySelector('#name');
             if(input.value === '') return;
