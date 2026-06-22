@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dropdown Menu</title>
     <link rel="stylesheet" href="/src/output.css">
 </head>
-<body>
-    <ul class="container">
-        <li>Keep working hard</li>
-    </ul>
-
-    <script>
+<body class="min-h-svh">
+    <!-- 1. The main grid centers the anchor wrapper on the screen -->
+    <div class="fixed inset-0 grid place-content-center">
         
-        const todos = ["Buy Milk", "Watch Yourself Grow"];
-        const list = document.querySelector('.container');
+        <!-- 2. THE ANCHOR: Keeps the menu attached to the button -->
+        <div class="relative">
+            
+            <!-- The Button (Stays perfectly still) -->
+            <button id="dropdown-btn" class="w-40 bg-[#202833] text-white p-2 px-4 rounded-md">
+                Select an option
+            </button>
 
-        function render(){
-            // Clear the container before appending the element
-            list.innerHTML = '';
-            todos.forEach( todo => {
-                const li = document.createElement('li');
-                li.textContent = todo;
+            <!-- 3. THE FLOAT: Positioned absolutely below the button -->
+            <div id="dropdown-menu" class="hidden absolute top-full left-0 w-40 mt-1 z-10 bg-[#202833] text-white rounded-md">
+                <div class="grid">
+                    <button class="p-1 text-left hover:bg-[#37414f]">Electronics</button>
+                    <button class="p-1 text-left hover:bg-[#37414f]">Apparel</button>
+                    <button class="p-1 text-left hover:bg-[#37414f]">Home Appliances</button>
+                </div>
+            </div>
 
-                list.appendChild(li);
-            });
-        }
+        </div>
+    </div>
+    <script>
+        const dropdownBtn = document.querySelector('#dropdown-btn');
+        const dropdownMenu = document.querySelector('#dropdown-menu');
 
-        function addTask(task){
-            todos.push(task);
-            render();
-        }
-
-        addTask("Cool");
-        addTask("King");
-
-
+        dropdownBtn.addEventListener('click', (e) => {
+            dropdownMenu.classList.toggle('hidden');
+        });
     </script>
 </body>
 </html>

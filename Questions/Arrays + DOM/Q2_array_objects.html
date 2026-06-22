@@ -14,10 +14,18 @@ render them as cards. Add a filter dropdown by category that shows only matching
     <link rel="stylesheet" href="/src/output.css">
 </head>
 <body class="min-h-full bg-[#fcfcfc] min-w-full p-2 space-y-1.5">
+    <div class="dropdown" class="relative space-y-1">
+        <button id="dropdown-btn" class="bg-[#202833] text-white px-3 py-2 rounded-sm w-40">Select a category</button>
+        <div id="dropdown-menu" class="absolute top-13 bg-[#202833] grid w-40 rounded-sm space-y-1 hidden">
+            <button data-category="None"            class="px-3 w-full cursor-pointer bg-[#202833] rounded-sm text-left p-1 hover:bg-[#485067] text-white">None</button>
+            <button data-category="Electronics"     class="px-3 w-full cursor-pointer bg-[#202833] rounded-sm text-left p-1 hover:bg-[#485067] text-white">Electronics</button>
+            <button data-category="Apparel"         class="px-3 w-full cursor-pointer bg-[#202833] rounded-sm text-left p-1 hover:bg-[#485067] text-white">Apparel</button>
+            <button data-category="Home Appliances" class="px-3 w-full cursor-pointer bg-[#202833] rounded-sm text-left p-1 hover:bg-[#485067] text-white">Home Appliances</button>
+        </div>
+    </div>
+
     <!-- Main -->
-    <main id="list" class="bg-[#e5e6fa] p-2 rounded-sm w-full grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-1">
-   
-    </main>
+    <main id="list" class="bg-[#e5e6fa] p-2 rounded-sm w-full grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-1"></main>
     <script>
         const products = [
             { 
@@ -56,10 +64,10 @@ render them as cards. Add a filter dropdown by category that shows only matching
             return element;
         }
 
-        function render(){
+        function render(arrayToRender){
             list.innerHTML = '';
 
-            products.forEach( product => {
+            arrayToRender.forEach( product => {
                 // article - holder of all content
                 const article = document.createElement('article');
                 article.className = 'bg-white h-fit p-2 rounded-sm grid gap-1'
@@ -92,7 +100,38 @@ render them as cards. Add a filter dropdown by category that shows only matching
             });
         }
 
-        render();
+        const dropdown = document.querySelector('.dropdown');
+        const dropdownBtn = document.querySelector('#dropdown-btn');
+        const dropdownMenu = document.querySelector('#dropdown-menu');
+
+        dropdown.addEventListener('click', (e) => {
+
+            const click = e.target.closest('#dropdown-btn');
+            if(!click) return;
+            
+            if(click){
+                dropdownMenu.classList.toggle('hidden');
+                dropdownMenu.addEventListener('click', (e) => {
+                    const item = e.target.closest('[data-category]');
+                    
+                    click.textContent = item.dataset.category;
+                    filterCategories(item.textContent);
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+        });
+
+        function filterCategories(category){
+            if(category === 'None'){
+                render(products);
+            } else {
+                const filteredItems = products.filter( pro => pro.category === category);
+                // returns the shallow copy of products which is filtered;
+                render(filteredItems);
+            }
+        }
+
+        render(products);
     </script>
 </body>
 </html>
