@@ -18,11 +18,55 @@
         </div>
 
         <!-- LIST CONTAINER -->
-        <ul class="list space-y-1"></ul>
+        <ul class="list space-y-1">
+
+        </ul>
     </div>
     
     <script>
+        const todos = ["Baka", "Tron", "Flynn"];
+        const list = document.querySelector('.list');
+        const addName = document.querySelector('#add-name');
+        
+        // Clear all and re-render everything approach
+        function render(){
+            // Clear the container
+            list.innerHTML = "";
+
+            todos.forEach( (todo, index) => {
+
+                const span = document.createElement('span');
+                span.textContent = `${index + 1}. ${todo}`;
+                span.className = 'bg-white text-[#3f5f44] w-full flex justify-between items-center p-2 rounded-sm'
+
+                const del = document.createElement('button');
+                del.textContent = "Del";
+                del.className = 'bg-[#dc2227] py-1 px-2 rounded-sm text-white cursor-pointer';
+                del.dataset.index = index;
+
+                span.appendChild(del);
+                list.appendChild(span);
+
+                del.addEventListener('click', () => {
+                    todos.splice(index, 1);
+                    render();
+                });
+
                 
+            });
+        }
+
+        addName.addEventListener('click', () => {
+            const input = document.querySelector('#name');
+            if(input.value === '') return;
+            const task = input.value;
+
+            todos.push(task);
+            input.value = '';
+            render();            
+        });
+
+        render();
     </script>
 </body>
 </html>
