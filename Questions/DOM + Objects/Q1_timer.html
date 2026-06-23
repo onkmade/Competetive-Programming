@@ -1,0 +1,73 @@
+<!-- 
+1. Live Character Counter
+Build a tweet-style input. Show characters remaining. 
+Turn red when over limit. The counter updates on every keystroke. 
+The object stores maxLength, currentLength, isOverLimit(). 
+Wire input event to update the object, then update the DOM from the object 
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Character Counter</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="min-h-svh grid place-content-center">
+    <main class="p-2 rounded-sm w-140 space-y-2 bg-[#121212]">
+        <h2 class="text-white">Write Your Thoughts</h2>
+        <textarea name="" id="para" placeholder="Click to Start" class="bg-[#1a1a1a] text-white placeholder:text-[#f4ebdcs] w-full p-2 outline-none h-40 border-b-2 border-white/50 resize-none"></textarea>
+        <div class="text-right text-[#f4ebdc]">
+            <p class="isLimit">
+                <span id="counter">0</span>
+                / 250
+            </p>
+        </div>
+    </main>
+
+    <script>
+        const textCounter = {
+            currentLength: 0,
+            maxLenght: 250, // Keeping your property name verbatim
+            isOver: false,
+
+            updateDisplay(tag) {
+                const span = document.querySelector(tag);
+                const textArea = document.querySelector('#para');
+
+                textArea.addEventListener('keydown', (e) => {
+                    const allowedKeys = ["Backspace", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+                    const isControlModifier = e.ctrlKey || e.metaKey;
+
+                    if( this.currentLength >= this.maxLenght && !allowedKeys.includes(e.key) && !isControlModifier){
+                        e.preventDefault();
+                    }
+                });
+
+                textArea.addEventListener('input', (e) => {
+                    const length = e.target.value.length;
+                    span.textContent = length;
+                    this.currentLength = length;                        
+
+                    this.isOverLimit();
+                });
+            },
+
+            isOverLimit() {
+                const limit = document.querySelector('.isLimit');
+                
+                if (this.currentLength >= this.maxLenght) {
+                    this.isOver = true;
+                    limit.classList.add('text-red-400');
+                } else {
+                    this.isOver = false;
+                    limit.classList.remove('text-red-400');
+                }
+            }
+        }
+
+        textCounter.updateDisplay('#counter');
+        
+    </script>
+</body>
+</html>
