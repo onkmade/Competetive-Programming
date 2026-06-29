@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callbacks Combined with Classes, DOM Events, and User Interactions</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body>
+    <main>
+        
+    </main>
+
+    <script>
+        class Button{
+            constructor(button, callback){
+                this.button = button;
+                this.callback = callback;
+            }
+
+            create(){
+                const main = document.querySelector('main');
+                const btn = document.createElement('button');
+                btn.className = "bg-blue-400 p-2 rounded-sm w-fit m-2 text-white cursor-pointer"
+                btn.textContent = this.button;
+
+                btn.addEventListener('click', () => {
+                    this.callback(btn);
+                });
+
+                main.appendChild(btn);
+            }
+
+            applyStyle(btn){
+                this.btn.addEventListener('click', () => this.callback());
+            }
+        }
+
+        const changeColor = (element) => element.classList.toggle('bg-orange-400');
+        const changeBackground = () => document.body.style.backgroundColor = "#ff6060";
+        const add = new Button("Add", changeColor);
+        add.applyStyle(add)
+        add.create();
+    </script>
+</body>
+</html>
