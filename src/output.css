@@ -1,4 +1,4 @@
-/*! tailwindcss v4.3.1 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -10,10 +10,12 @@
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-orange-400: oklch(75% 0.183 55.934);
     --color-amber-400: oklch(82.8% 0.189 84.429);
+    --color-lime-300: oklch(89.7% 0.196 126.665);
+    --color-lime-400: oklch(84.1% 0.238 128.85);
+    --color-lime-500: oklch(76.8% 0.233 130.85);
     --color-blue-400: oklch(70.7% 0.165 254.624);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-600: oklch(54.6% 0.245 262.881);
-    --color-pink-500: oklch(65.6% 0.241 354.308);
     --color-slate-200: oklch(92.9% 0.013 255.508);
     --color-slate-300: oklch(86.9% 0.022 252.894);
     --color-slate-400: oklch(70.4% 0.04 256.788);
@@ -23,6 +25,9 @@
     --color-slate-800: oklch(27.9% 0.041 260.031);
     --color-slate-900: oklch(20.8% 0.042 265.755);
     --color-slate-950: oklch(12.9% 0.042 264.695);
+    --color-olive-50: oklch(98.8% 0.003 106.5);
+    --color-olive-200: oklch(93% 0.007 106.5);
+    --color-olive-500: oklch(58% 0.031 107.3);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -222,7 +227,7 @@
     position: sticky;
   }
   .inset-0 {
-    inset: 0;
+    inset: 0px;
   }
   .top-13 {
     top: calc(var(--spacing) * 13);
@@ -231,7 +236,7 @@
     top: 100%;
   }
   .left-0 {
-    left: 0;
+    left: 0px;
   }
   .isolate {
     isolation: isolate;
@@ -453,47 +458,35 @@
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
-  .space-y-1 {
-    :where(& > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
-      margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
-    }
+  :where(.space-y-1 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
+    margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
   }
-  .space-y-1\.5 {
-    :where(& > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(calc(var(--spacing) * 1.5) * var(--tw-space-y-reverse));
-      margin-block-end: calc(calc(var(--spacing) * 1.5) * calc(1 - var(--tw-space-y-reverse)));
-    }
+  :where(.space-y-1\.5 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 1.5) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 1.5) * calc(1 - var(--tw-space-y-reverse)));
   }
-  .space-y-2 {
-    :where(& > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
-      margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
-    }
+  :where(.space-y-2 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
   }
-  .space-x-1 {
-    :where(& > :not(:last-child)) {
-      --tw-space-x-reverse: 0;
-      margin-inline-start: calc(var(--spacing) * var(--tw-space-x-reverse));
-      margin-inline-end: calc(var(--spacing) * calc(1 - var(--tw-space-x-reverse)));
-    }
+  :where(.space-x-1 > :not(:last-child)) {
+    --tw-space-x-reverse: 0;
+    margin-inline-start: calc(var(--spacing) * var(--tw-space-x-reverse));
+    margin-inline-end: calc(var(--spacing) * calc(1 - var(--tw-space-x-reverse)));
   }
-  .space-x-1\.5 {
-    :where(& > :not(:last-child)) {
-      --tw-space-x-reverse: 0;
-      margin-inline-start: calc(calc(var(--spacing) * 1.5) * var(--tw-space-x-reverse));
-      margin-inline-end: calc(calc(var(--spacing) * 1.5) * calc(1 - var(--tw-space-x-reverse)));
-    }
+  :where(.space-x-1\.5 > :not(:last-child)) {
+    --tw-space-x-reverse: 0;
+    margin-inline-start: calc(calc(var(--spacing) * 1.5) * var(--tw-space-x-reverse));
+    margin-inline-end: calc(calc(var(--spacing) * 1.5) * calc(1 - var(--tw-space-x-reverse)));
   }
-  .space-x-2 {
-    :where(& > :not(:last-child)) {
-      --tw-space-x-reverse: 0;
-      margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
-      margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
-    }
+  :where(.space-x-2 > :not(:last-child)) {
+    --tw-space-x-reverse: 0;
+    margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
+    margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
   }
   .truncate {
     overflow: hidden;
@@ -648,6 +641,15 @@
   }
   .bg-blue-600 {
     background-color: var(--color-blue-600);
+  }
+  .bg-olive-50 {
+    background-color: var(--color-olive-50);
+  }
+  .bg-olive-200 {
+    background-color: var(--color-olive-200);
+  }
+  .bg-olive-500 {
+    background-color: var(--color-olive-500);
   }
   .bg-orange-400 {
     background-color: var(--color-orange-400);
@@ -878,107 +880,65 @@
     -webkit-user-select: none;
     user-select: none;
   }
-  .placeholder\:text-\[\#f4ebdcs\] {
-    &::placeholder {
-      color: #f4ebdcs;
-    }
+  .placeholder\:text-\[\#f4ebdcs\]::placeholder {
+    color: #f4ebdcs;
   }
-  .placeholder\:text-slate-700 {
-    &::placeholder {
-      color: var(--color-slate-700);
-    }
+  .placeholder\:text-slate-700::placeholder {
+    color: var(--color-slate-700);
   }
-  .hover\:border {
-    &:hover {
-      @media (hover: hover) {
-        border-style: var(--tw-border-style);
-        border-width: 1px;
-      }
+  @media (hover: hover) {
+    .hover\:border:hover {
+      border-style: var(--tw-border-style);
+      border-width: 1px;
     }
-  }
-  .hover\:border-white {
-    &:hover {
-      @media (hover: hover) {
-        border-color: var(--color-white);
-      }
+    .hover\:border-white:hover {
+      border-color: var(--color-white);
     }
-  }
-  .hover\:bg-\[\#37414f\] {
-    &:hover {
-      @media (hover: hover) {
-        background-color: #37414f;
-      }
+    .hover\:bg-\[\#37414f\]:hover {
+      background-color: #37414f;
     }
-  }
-  .hover\:bg-\[\#485067\] {
-    &:hover {
-      @media (hover: hover) {
-        background-color: #485067;
-      }
+    .hover\:bg-\[\#485067\]:hover {
+      background-color: #485067;
     }
-  }
-  .hover\:bg-slate-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-slate-700);
-      }
+    .hover\:bg-slate-700:hover {
+      background-color: var(--color-slate-700);
     }
-  }
-  .hover\:bg-slate-800 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-slate-800);
-      }
+    .hover\:bg-slate-800:hover {
+      background-color: var(--color-slate-800);
     }
-  }
-  .hover\:text-white {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-white);
-      }
+    .hover\:text-white:hover {
+      color: var(--color-white);
     }
-  }
-  .hover\:outline-1 {
-    &:hover {
-      @media (hover: hover) {
-        outline-style: var(--tw-outline-style);
-        outline-width: 1px;
-      }
-    }
-  }
-  .hover\:outline-white\/20 {
-    &:hover {
-      @media (hover: hover) {
-        outline-color: color-mix(in srgb, #fff 20%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          outline-color: color-mix(in oklab, var(--color-white) 20%, transparent);
-        }
-      }
-    }
-  }
-  .active\:outline-1 {
-    &:active {
+    .hover\:outline-1:hover {
       outline-style: var(--tw-outline-style);
       outline-width: 1px;
     }
-  }
-  .active\:outline-white {
-    &:active {
-      outline-color: var(--color-white);
+    .hover\:outline-white\/20:hover {
+      outline-color: color-mix(in srgb, #fff 20%, transparent);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:outline-white\/20:hover {
+        outline-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+      }
     }
   }
-  .sm\:grid-cols-1 {
-    @media (width >= 40rem) {
+  .active\:outline-1:active {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+  .active\:outline-white:active {
+    outline-color: var(--color-white);
+  }
+  @media (width >= 40rem) {
+    .sm\:grid-cols-1 {
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
   }
-  .md\:grid-cols-2 {
-    @media (width >= 48rem) {
+  @media (width >= 48rem) {
+    .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-  }
-  .md\:grid-cols-3 {
-    @media (width >= 48rem) {
+    .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }

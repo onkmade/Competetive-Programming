@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting System</title>
+    <link rel="stylesheet" href="/src/output.css">
+</head>
+<body class="min-h-screen grid place-content-center">
+    <div class="bg-olive-200 space-y-2 p-2 rounded-md">
+        <header>
+            <p class="w-full bg-white text-center p-1"><span class="display">None</span></p>
+        </header>
+        <main class="participants">
+            <button data-participant="can1" class="p-2 bg-blue-600 text-white rounded-md ">Can-1</button>
+            <button data-participant="can2" class="p-2 bg-blue-600 text-white rounded-md ">Can-2</button>
+            <button data-participant="can3" class="p-2 bg-blue-600 text-white rounded-md ">Can-3</button>
+        </main>
+        <footer>
+            <button id="vote-btn" class="p-2 rounded-md bg-orange-400">Vote</button>
+            <p class="message hidden"></p>
+        </footer>
+    </div>
+
+    <script>
+        const voteBtn = document.getElementById('vote-btn');
+
+        function selectCandidate(){
+            const participants = document.querySelector('.participants');
+            const display = document.querySelector('.display');
+    
+            participants.addEventListener('click', (e) => {
+                const clicked = e.target;
+                display.textContent = clicked.textContent;
+            });
+        }
+
+
+        const message = document.querySelector('.message');
+        voteBtn.addEventListener('click', (e) => {
+            const can = selectCandidate();
+            console.log(can);
+        });
+    </script>
+</body>
+</html>
