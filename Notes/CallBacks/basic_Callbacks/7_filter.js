@@ -11,9 +11,5 @@ function myFilter(arr, callbackFN){
 }
 
 const size = 4;
-function printNames(element, index, arr){
-    return element.length > size ? true : false;
-}
-
-const names = ["baka", "manisha", "harshu", "aaru", "kingaaru"];
-console.log(myFilter(names, printNames));
+const names = ["baka", "manisha", "harshu", "king", "aaryansh"];
+console.log(myFilter(names, (name) => name.length > size));
